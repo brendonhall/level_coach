@@ -126,6 +126,46 @@ Events to react to: `PLAYER_ENTERING_WORLD`, `PLAYER_LEVEL_UP`, `ZONE_CHANGED_NE
 `PLAYER_MONEY`, `BAG_UPDATE_DELAYED`, `HEARTHSTONE_BOUND`, `TAXIMAP_OPENED`,
 `GROUP_ROSTER_UPDATE`, and `PLAYER_REGEN_ENABLED` to defer UI work until out of combat.
 
+### 2.5 API facts from community references (gathered 2026-11-08)
+
+Digest in `docs/research/2026-11-08-addons-and-api.md`. All of it is "reported", none of it
+Blizzard-documented, so Phase 0 probes each item in the live client.
+
+- **Client identity.** Interface `16001`, game version 1.60.1, API family "Mainline 12.1.5".
+  Confirm with `/dump select(4, GetBuildInfo())`. Forever's internal game-type name is
+  "Camelot": `WOW_PROJECT_CAMELOT` (18 on build 70338) exists next to `WOW_PROJECT_MAINLINE`
+  (1), so detect Forever with `WOW_PROJECT_ID == WOW_PROJECT_CAMELOT` behind a nil guard, never
+  with a Classic check. `C_GameRules.GetForeverExperiencePreset()` doubles as a capability probe.
+- **TOC.** `## Interface: 16001`; a Forever-only file can be `Name_Camelot.toc` or
+  `Name_Forever.toc`, or a shared TOC can use `[AllowLoadGameType camelot]`. Level Coach is
+  Forever-only, so a single TOC with the interface line is enough.
+- **Removed globals we would have reached for.** `GetSpellInfo` becomes `C_Spell.GetSpellInfo`
+  (returns a table, nil until loaded; request with `C_Spell.RequestLoadSpellData` and listen
+  for `SPELL_DATA_LOAD_RESULT`); `GetItemInfo` becomes `C_Item.GetItemInfo` (same async
+  pattern with `ITEM_DATA_LOAD_RESULT`); talents live on `C_Traits`; `GetAddOnMetadata`
+  becomes `C_AddOns.GetAddOnMetadata`; `GetNumSkillLines` is gone with no replacement named,
+  so the skill-line detector (First Aid, professions) must be probed in Phase 0 and may need
+  the retail profession functions.
+- **Secret values.** Midnight's combat restrictions apply: unit health, names and some
+  booleans can be "secret" in combat; arithmetic or comparison on them throws. Level Coach
+  reads out-of-combat state, so the rule is simply: refresh the panel on
+  `PLAYER_REGEN_ENABLED`, guard anything unit-derived with `issecretvalue`, and never touch the
+  combat log (registering `COMBAT_LOG_EVENT_UNFILTERED` throws).
+- **SavedVariables.** Loaded after the addon's files and before that addon's `ADDON_LOADED`;
+  create and read the DB inside `ADDON_LOADED`, do a final write on `PLAYER_LOGOUT`. A beta
+  build had a restore bug; retest on live.
+- **Protected calls fail silently** (no error, `pcall` does not help). Relevant to us:
+  `C_SuperTrack.SetSuperTrackedUserWaypoint` is protected, but `C_Map.SetUserWaypoint` with a
+  `UiMapPoint` works, which gives Level Coach a built-in map pin for every "where" without
+  TomTom. TomTom stays an optional nicety.
+- **Libraries.** AceDB's region lookup broke on Forever (`GetCurrentRegion()` returned an
+  unknown id). One more reason the core avoids Ace3; if AceGUI is ever vendored, vendor only it.
+- **Lua.** Modified 5.1: no `goto`, no bitwise operators (use `bit.*`), no `os`, `io`,
+  `require` or `loadfile`; the TOC is the module loader; every file starts
+  `local addonName, ns = ...`. Named frames are globals, so prefix them.
+- **Policy.** Blizzard requires addons to be free with no premium tier or hidden code. Level
+  Coach is free and open; the coach runs outside the game and is personal tooling.
+
 ## 3. Goals, non-goals, anti-goals
 
 ### Goals (v1)
@@ -313,7 +353,7 @@ Each `done_when` is one of a small set of detectors implemented once in Lua:
 |---|---|---|
 | `quest_complete: id` | `C_QuestLog.IsQuestFlaggedCompleted` | Class quest done |
 | `spell_known: id` | `IsPlayerSpell` / `C_Spell` | Trained a rank, learned riding |
-| `skill_line: {name, min}` | Skill-line API | First Aid at 75 |
+| `skill_line: {name, min}` | Skill-line or profession API (to be probed; `GetNumSkillLines` is gone) | First Aid at 75 |
 | `level_at_least: n` | `UnitLevel` | Window gating |
 | `bind_location: zone` | `GetBindLocation` | Hearth moved |
 | `has_item: id` | Bag scan via `C_Item` | Bought bags, carrying a Hearthstone |
@@ -376,8 +416,9 @@ Design rules that make this testable:
   but exact Forever-tested versions are unverified. Default: **no framework for the core**
   (plain frames keep the dependency surface tiny); add `LibDBIcon` for the minimap button
   and `AceGUI` only if the wizard gets complicated.
-- **TomTom:** optional integration via `TomTom:AddWaypoint` if present. Its Forever support
-  is unverified as of this writing; the feature degrades to showing coordinates.
+- **Waypoints:** the built-in user waypoint (`C_Map.SetUserWaypoint`) is the default "where"
+  pin, so every item can place a pin with no dependency. **TomTom** (Forever file exists, v4.3.13
+  of Oct 24) is used for the follow arrow when present.
 - **Packaging:** BigWigs packager (the standard GitHub Action) produces CurseForge/Wago
   zips and handles library pulls if we vendor via `.pkgmeta`.
 - **Dev loop (Linux dev, Windows game):** the repo is cloned on the Windows PC too, with
