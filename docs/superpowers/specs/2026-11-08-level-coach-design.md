@@ -1,13 +1,28 @@
 # Level Coach: design brainstorm
 
-**Status:** Draft v0, 2026-11-08. This is brainstorm output, not an approved design.
-Nothing gets built until Brendon reviews it, answers the open questions in §8, and approves.
-After approval the next step is an implementation plan (Superpowers `writing-plans`), not code.
+**Status:** Draft v0.2, 2026-11-08. Brainstorm output plus Brendon's first round of decisions
+(§0). Not yet an approved design: nothing gets built until Brendon approves this document and
+the companion note `2026-11-08-coach-agent-architecture.md`. After approval the next step is an
+implementation plan (Superpowers `writing-plans`), not code.
 
 **Game:** World of Warcraft: Forever (Blizzard's permanent vanilla-based "Classic+" branch,
 launched 2026-11-04, level cap 60).
 
 ---
+
+## 0. Decisions so far (2026-11-08)
+
+Brendon answered the first round of questions. These are now constraints, not options:
+
+| Topic | Decision |
+|---|---|
+| Approach | A (static coach) now, with B1 (Claude Code on the existing subscription, no API key) designed in. The "agent server" shape is explored in `2026-11-08-coach-agent-architecture.md`. |
+| First character | Undead Affliction Warlock. All v1 content targets it. A pre-prepared 1-60 guide distilled from current Forever sources lives in `docs/guides/undead-affliction-warlock.md` and seeds the data files. |
+| Other addons | None installed yet. Recommendations for a leveling warlock are in the guide document. Level Coach stays a checklist and does not do routing. |
+| Licensing | No preference yet. Default: original text, linked sources, compatibly licensed data only. |
+| Distribution | Personal use while the concept is worked out. No CurseForge packaging, no library vendoring beyond what the UI needs. |
+| Machines | Game on Windows. Development on Linux. The addon is deployed to the Windows PC; the coach runs on Linux. |
+| Lua tooling | Not installed. Lua tests run from pytest through `lupa`, which embeds Lua 5.1 (verified 2026-11-08: `lupa` 2.8 exposes `lupa.lua51` and ships Linux and Windows wheels). No separate Lua install needed. |
 
 ## 1. Intent
 
@@ -213,6 +228,8 @@ The companion generates the entire plan per character; the addon only renders it
 Start B1 as soon as A produces an export worth reading, because it also solves A's biggest
 cost: AI-drafted, human-verified content. Skip C.
 
+**Decision (2026-11-08):** confirmed by Brendon, with B1 as the companion flavor.
+
 ## 5. Proposed design (Approach A, B-ready)
 
 ### 5.1 Player experience
@@ -324,7 +341,8 @@ level_coach/
     Data/
       Items.lua                  # GENERATED from data/*.yaml, do not edit
       Zones.lua                  # GENERATED
-      Overlay.lua                # empty by default; companion overwrites (the B seam)
+      Overlay.lua                # accepted coach items (the B seam); empty by default
+      Overlay.pending.lua        # coach proposals awaiting /lc accept; empty by default
     UI/
       Panel.lua                  # checklist frame
       Wizard.lua                 # interview frame
@@ -336,8 +354,8 @@ level_coach/
     export_reader.py             # parse SavedVariables for the companion / analysis
     (coach.py)                   # v2 companion, B2 flavor
   tests/
-    lua/                         # Engine and Detectors tests, run with Lua 5.1 locally
-    python/                      # pytest for the tools
+    lua/                         # Engine and Detectors specs, executed through lupa (Lua 5.1)
+    python/                      # pytest for the tools, plus the runner for tests/lua
   docs/superpowers/specs/        # this document and its successors
   .github/workflows/ci.yml       # luacheck + lua tests + pytest + build + package zip
 ```
@@ -346,7 +364,8 @@ Design rules that make this testable:
 
 - `Engine.lua` and `Detectors.lua` never call the WoW API directly. `State.lua` produces a
   plain table; detectors receive that table. Tests feed hand-written snapshots.
-- Run local Lua tests on **Lua 5.1** (the client's dialect), not 5.4, to avoid surprises.
+- Run Lua tests on **Lua 5.1** (the client's dialect) through `lupa.lua51` from pytest, so one
+  `pytest` run covers both languages and nothing extra is installed on either machine.
 - `Data/*.lua` are build outputs. CI fails if they are out of date with `data/`.
 
 ### 5.6 Libraries and compatibility
@@ -361,9 +380,11 @@ Design rules that make this testable:
   is unverified as of this writing; the feature degrades to showing coordinates.
 - **Packaging:** BigWigs packager (the standard GitHub Action) produces CurseForge/Wago
   zips and handles library pulls if we vendor via `.pkgmeta`.
-- **Dev loop:** symlink or junction `LevelCoach/` into the Forever `Interface/AddOns`
-  folder (the flavor directory was `_classic_beta_` during beta; confirm the live name),
-  then `/reload`. Install BugSack and BugGrabber for error capture.
+- **Dev loop (Linux dev, Windows game):** the repo is cloned on the Windows PC too, with
+  `Interface/AddOns/LevelCoach` as an NTFS junction to the clone's `LevelCoach/` folder. After
+  a push from Linux, a one-click `git pull` on Windows and `/reload` in game picks up the
+  change. Guides show the Forever flavor folder as `_forever_` (it was `_classic_beta_` during
+  beta); confirm in the live install. Install BugSack and BugGrabber for error capture.
 
 ### 5.7 UI sketch
 
@@ -418,7 +439,8 @@ game.
    of Forever is unreliable (the game is days old).
 3. Propose plan overlay items and plain-language notes ("you skipped both dungeons in your
    range; if the goal is still dungeons-with-friends, Wailing Caverns is the next window").
-4. Brendon reviews; approved items are written to `LevelCoach/Data/Overlay.lua`.
+4. The coach writes `Overlay.pending.lua`; Brendon reviews in game and promotes items with
+   `/lc accept`.
 5. `/reload` in game.
 
 **Key handling, if B2 (standalone Python) is chosen:**
@@ -454,22 +476,19 @@ players without Claude Code.
 | Players confuse Level Coach with a routing addon | Positioning and README: "works alongside RestedXP / Questie"; optional zone hints only |
 | Scope creep toward in-game AI | This document's anti-goals; the sandbox makes it moot anyway |
 
-## 8. Open questions for Brendon, in order of how much they change the build
+## 8. Open questions
 
-1. **Approach.** A now with B designed in, as recommended? Or go straight to B1 because
-   the content gap is the real problem?
-2. **Your character.** Class, race, faction, ruleset, and your honest goal profile from
-   §5.1. This seeds the first dataset and is the first thing we verify in game.
-3. **Routing addons.** Do you already run RestedXP, Questie or Zygor? If yes, Level Coach
-   stays strictly a checklist. If no, the "which zone next" hints matter more.
-4. **Companion flavor, when the time comes.** B1 (Claude Code skill, no key) or B2
-   (standalone Python app with an API key)?
-5. **Content licensing comfort.** Original content only, or also compatibly licensed data
-   such as CC BY-SA wiki text and, license permitting, Questie's quest database?
-6. **Distribution.** Personal tool, or published on CurseForge or Wago for others? This
-   affects packaging, library vendoring and how carefully we mark unverified items.
-7. **Dev setup.** Windows or Mac for the game, whether Lua 5.1 is installed locally, and
-   which addon manager you use.
+Round one (approach, character, routing addons, companion flavor, licensing, distribution,
+dev setup) was answered on 2026-11-08; see §0. Remaining:
+
+1. **Bridge between the machines.** Dropbox or Syncthing for the export and overlay files?
+   (Architecture note, §2.)
+2. **Hardcore.** Any intention to try the Hardcore ruleset when it arrives? It changes the
+   checklist's priorities (safety items) and is cheap to plan for now.
+3. **Review model for coach proposals.** Everything through `/lc accept`, or auto-accept
+   trivial items such as new spell ranks? Default: everything.
+4. **Goal profile.** The interview answers for this character (§5.1), so the first dataset
+   can be ranked for the way Brendon actually wants to play.
 
 ## 9. Roadmap sketch (phases, not a plan)
 
@@ -477,14 +496,15 @@ players without Claude Code.
   ID, completed-quest count, known-spell count and skill lines to chat. Probe the API
   names in §2.4. Throwaway; it only answers questions.
 - **Phase 1, engine and data (days):** YAML schema, `build_data.py` with validation and
-  tests, `Engine.lua` and `Detectors.lua` with Lua tests, a first dataset for Brendon's
-  class and faction covering levels 1 to 20.
+  tests, `Engine.lua` and `Detectors.lua` with Lua tests via lupa, a first dataset for the
+  Undead Affliction Warlock covering levels 1 to 20, seeded from the guide document.
 - **Phase 2, UI (days):** checklist panel, interview wizard, slash commands, SavedVariables,
   TomTom hook. First real use in game.
 - **Phase 3, breadcrumbs (days):** recorder, export, `export_reader.py` producing YAML
   drafts. Extend data to 60 as Brendon levels.
-- **Phase 4, companion B1 (days):** Claude Code skill that reads the export, researches,
-  proposes overlay items for review, writes `Overlay.lua`.
+- **Phase 4, companion B1 (days):** the `/coach` skill, the file bridge, then the daemon,
+  as laid out in `2026-11-08-coach-agent-architecture.md`. Proposals land in
+  `Overlay.pending.lua` and are accepted in game.
 - **Later:** B2 if other players want the companion; CurseForge release; Hardcore ruleset
   items; Legacy-system awareness for alts.
 
