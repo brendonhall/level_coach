@@ -7,14 +7,26 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 class Lua:
-    """A Lua 5.1 runtime for compiling and running addon files outside the game."""
+    """A Lua 5.1 runtime with WoW stubs, for running addon files outside the game."""
 
     def __init__(self):
         self.rt = LuaRuntime(unpack_returned_tuples=True)
         self._load = self.rt.eval("function(src, name) local f, e = loadstring(src, name); assert(f, e); return f end")
+        self.rt.execute((ROOT / "tests" / "lua" / "wow_stub.lua").read_text(encoding="utf-8"))
+        self.ns = self.rt.table()
 
     def compile(self, src, name):
+        """Compile without running; raises on a syntax error."""
         return self._load(src, name)
+
+    def load_addon_file(self, relpath):
+        """Run an addon file with the (addonName, ns) varargs the client passes."""
+        src = (ROOT / "LevelCoach" / relpath).read_text(encoding="utf-8")
+        return self._load(src, "=" + relpath)("LevelCoach", self.ns)
+
+    def table(self, obj):
+        """Recursively convert a Python dict or list into a Lua table."""
+        return self.rt.table_from(obj, recursive=True)
 
 
 @pytest.fixture
