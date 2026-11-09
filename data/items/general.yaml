@@ -281,3 +281,16 @@
   done_when: {type: manual}
   verified: {forever: false}
   sources: *wiki
+
+- id: general-gravestone-scepter
+  title: Get the Gravestone Scepter from Blackfathom Villainy
+  why: 29 DPS wand, the best before the mid-twenties. The quest opens at 18; expect to need to be higher.
+  kind: item
+  level: {min: 18, max: 26}
+  classes: [WARLOCK, MAGE, PRIEST]
+  goals: [any]
+  priority: normal
+  where: {zone: Ashenvale, note: "Blackfathom Deeps quest"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *method

@@ -671,6 +671,38 @@ ns.Data.Items = {
     ["why"] = "Horde quests from the Sepulcher, and one of the two Orb of Soran'ruk fragments for warlocks.",
   },
   {
+    ["classes"] = {
+      "WARLOCK",
+      "MAGE",
+      "PRIEST",
+    },
+    ["done_when"] = {
+      ["type"] = "manual",
+    },
+    ["goals"] = {
+      "any",
+    },
+    ["id"] = "general-gravestone-scepter",
+    ["kind"] = "item",
+    ["level"] = {
+      ["max"] = 26,
+      ["min"] = 18,
+    },
+    ["priority"] = "normal",
+    ["sources"] = {
+      "https://www.method.gg/wow-forever/wow-forever-warlock-leveling-guide-and-talents",
+    },
+    ["title"] = "Get the Gravestone Scepter from Blackfathom Villainy",
+    ["verified"] = {
+      ["forever"] = false,
+    },
+    ["where"] = {
+      ["note"] = "Blackfathom Deeps quest",
+      ["zone"] = "Ashenvale",
+    },
+    ["why"] = "29 DPS wand, the best before the mid-twenties. The quest opens at 18; expect to need to be higher.",
+  },
+  {
     ["done_when"] = {
       ["of"] = {
         {
@@ -1397,38 +1429,6 @@ ns.Data.Items = {
       ["forever"] = false,
     },
     ["why"] = "Battle resurrection for you or a friend.",
-  },
-  {
-    ["classes"] = {
-      "WARLOCK",
-      "MAGE",
-      "PRIEST",
-    },
-    ["done_when"] = {
-      ["type"] = "manual",
-    },
-    ["goals"] = {
-      "any",
-    },
-    ["id"] = "warlock-gravestone-scepter",
-    ["kind"] = "item",
-    ["level"] = {
-      ["max"] = 26,
-      ["min"] = 18,
-    },
-    ["priority"] = "normal",
-    ["sources"] = {
-      "https://www.method.gg/wow-forever/wow-forever-warlock-leveling-guide-and-talents",
-    },
-    ["title"] = "Get the Gravestone Scepter from Blackfathom Villainy",
-    ["verified"] = {
-      ["forever"] = false,
-    },
-    ["where"] = {
-      ["note"] = "Blackfathom Deeps quest",
-      ["zone"] = "Ashenvale",
-    },
-    ["why"] = "29 DPS wand, the best before the mid-twenties. The quest opens at 18; expect to need to be higher.",
   },
   {
     ["classes"] = {

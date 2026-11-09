@@ -261,19 +261,6 @@
   verified: {forever: false}
   sources: *method
 
-- id: warlock-gravestone-scepter
-  title: Get the Gravestone Scepter from Blackfathom Villainy
-  why: 29 DPS wand, the best before the mid-twenties. The quest opens at 18; expect to need to be higher.
-  kind: item
-  level: {min: 18, max: 26}
-  classes: [WARLOCK, MAGE, PRIEST]
-  goals: [any]
-  priority: normal
-  where: {zone: Ashenvale, note: "Blackfathom Deeps quest"}
-  done_when: {type: manual}
-  verified: {forever: false}
-  sources: *method
-
 - id: warlock-shards-habit
   title: Keep two or three spare Soul Shards, never a bag full
   why: Voidwalker, Sayaad and Felhunter summons each cost a shard, and Ritual of Summoning is the only way to summon players. A soul bag fits the reagent slot.
