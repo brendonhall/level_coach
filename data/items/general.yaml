@@ -1,0 +1,283 @@
+# Items for every class. Source short names: see docs/research/.
+- id: general-experience-preset
+  title: Pick the Enhanced preset, or turn on quest guidance
+  why: Forever ships Blizzard's own quest objective markers and points of interest. They replace half of what people install Questie for. Presentation only, not a ruleset.
+  kind: setup
+  level: {min: 1, max: 5}
+  goals: [any]
+  priority: normal
+  where: {note: "Game Menu > Options > Experience preset"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: &blizzard ["https://news.blizzard.com/en-us/article/24315821/wow-foreverwhats-new-and-what-feels-familiar"]
+
+- id: general-cooldown-manager
+  title: Turn on the built-in Cooldown Manager
+  why: Forever has one; it is off by default and covers every class since the Oct 8 beta build.
+  kind: setup
+  level: {min: 1, max: 10}
+  goals: [any]
+  priority: low
+  where: {note: "Options > Gameplay Enhancement"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: &fm ["https://forevermastery.com/en/addons/forever-compatibility"]
+
+- id: general-first-wand
+  title: Get a wand as soon as you can afford one
+  why: Wands are free damage with no mana cost. Every guide calls the first wand the biggest early upgrade for a caster. Lesser Magic Wand is enchanter-made and sells on the auction house.
+  kind: item
+  level: {min: 5, max: 20}
+  classes: [WARLOCK, MAGE, PRIEST]
+  goals: [any]
+  priority: high
+  where: {note: "Auction house or any enchanter; wand skill is default for casters"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: &method ["https://www.method.gg/wow-forever/wow-forever-warlock-leveling-guide-and-talents"]
+
+- id: general-pick-professions
+  title: Pick two professions
+  why: Guides lean Tailoring plus Enchanting for a cloth caster. Gathering pays for riding at 40 on a fresh economy. Professions also unlock campsite buffs from skill 20.
+  kind: profession
+  level: {min: 5, max: 20}
+  goals: [any]
+  priority: high
+  where: {note: "Brill or Undercity profession trainers"}
+  done_when:
+    type: any_of
+    of:
+      - {type: skill_line, name: Tailoring, min: 1}
+      - {type: skill_line, name: Enchanting, min: 1}
+      - {type: skill_line, name: Herbalism, min: 1}
+      - {type: skill_line, name: Mining, min: 1}
+      - {type: skill_line, name: Skinning, min: 1}
+      - {type: skill_line, name: Alchemy, min: 1}
+      - {type: skill_line, name: Engineering, min: 1}
+      - {type: skill_line, name: Leatherworking, min: 1}
+      - {type: skill_line, name: Blacksmithing, min: 1}
+  verified: {forever: false}
+  sources: &tavern ["https://www.warcrafttavern.com/forever/guides/warlock-leveling/"]
+
+- id: general-first-aid
+  title: Learn First Aid
+  why: Bandages heal between pulls or while a mob is feared. In Forever, First Aid also makes healing potions and cures for poisons, diseases and bleeds, which a warlock cannot otherwise remove.
+  kind: profession
+  level: {min: 5, max: 60}
+  goals: [any]
+  priority: high
+  done_when: {type: skill_line, name: First Aid, min: 1}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: general-cooking
+  title: Learn Cooking
+  why: Well Fed food gives about 5% more kill XP, and your own campsite needs a cooking fire.
+  kind: profession
+  level: {min: 5, max: 60}
+  goals: [any]
+  priority: low
+  done_when: {type: skill_line, name: Cooking, min: 1}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: general-camping-unlock
+  title: Unlock camping
+  why: New Forever system. Sit at a campfire to pick up campsite buffs; every profession adds a camp buff from skill 20. Start with the adventurer outside the first quest hub and the quest The Great Outdoors.
+  kind: quest
+  level: {min: 5, max: 12}
+  goals: [any]
+  priority: normal
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: &wiki ["https://warcraft.wiki.gg/wiki/World_of_Warcraft:_Forever"]
+
+- id: general-bags-four-slots
+  title: Fill all four bag slots
+  why: Shards, quest items and loot pile up fast. Any 6-slot bag is fine early; vendor greys and auction greens to pay for them.
+  kind: setup
+  level: {min: 5, max: 20}
+  goals: [any]
+  priority: normal
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *method
+
+- id: general-hearth-brill
+  title: Set your hearth in Brill
+  why: Brill is the handoff town after Deathknell and holds the Voidwalker quest at 10.
+  kind: setup
+  level: {min: 6, max: 12}
+  races: [Scourge]
+  goals: [any]
+  priority: normal
+  where: {zone: Tirisfal Glades, npc: Innkeeper Renee, note: "Gallows' End Tavern, Brill"}
+  done_when: {type: bind_location, zone: Brill}
+  verified: {forever: false, note: "Classic knowledge; confirm the inn is unchanged"}
+  sources: *tavern
+
+- id: general-hearth-sepulcher
+  title: Move your hearth to The Sepulcher
+  why: The Sepulcher is the Silverpine quest hub for levels 10 to 20.
+  kind: setup
+  level: {min: 10, max: 13}
+  factions: [Horde]
+  goals: [any]
+  priority: low
+  where: {zone: Silverpine Forest, note: "The Sepulcher inn"}
+  done_when: {type: bind_location, zone: The Sepulcher}
+  verified: {forever: false}
+  sources: &wfl ["https://wowforeverleveling.com/guides/wow-forever-horde-leveling-guide"]
+
+- id: general-zone-silverpine
+  title: Quest in Silverpine Forest from The Sepulcher
+  why: The shared Horde zone for levels 10 to 20. Shadowfang Keep is here for later, and some Ruins of Lordaeron quests start here.
+  kind: zone
+  level: {min: 10, max: 14}
+  factions: [Horde]
+  goals: [any]
+  priority: normal
+  where: {zone: Silverpine Forest}
+  done_when: {type: zone_visited, zone: Silverpine Forest}
+  verified: {forever: false}
+  sources: *wfl
+
+- id: general-zeppelin-to-barrens
+  title: Take the zeppelin to Orgrimmar and head to the Barrens
+  why: Most Horde routes move to the Barrens around 12 to 14 and use the Crossroads as a base, with Hillsbrad later. The zeppelin tower is outside the Undercity.
+  kind: zone
+  level: {min: 12, max: 16}
+  factions: [Horde]
+  goals: [any]
+  priority: normal
+  where: {zone: Tirisfal Glades, note: "Zeppelin tower outside the Undercity, Orgrimmar line"}
+  done_when: {type: zone_visited, zone: The Barrens}
+  verified: {forever: false}
+  sources: *wfl
+
+- id: general-hearth-crossroads
+  title: Set your hearth at the Crossroads
+  why: Central to the Barrens, with a flight path and the zeppelin to Orgrimmar nearby.
+  kind: setup
+  level: {min: 14, max: 26}
+  factions: [Horde]
+  goals: [any]
+  priority: low
+  where: {zone: The Barrens, note: "Crossroads inn"}
+  done_when: {type: bind_location, zone: Crossroads}
+  verified: {forever: false}
+  sources: *wfl
+
+- id: general-cozy-sleeping-bag
+  title: Consider the Cozy Sleeping Bag chain
+  why: Reported stacking XP buff plus a portable rest spot. Starts at 14 at the Burned-Out Remains in the southern Barrens and runs through level 25 to 30 zones. Details are disputed, so treat it as optional.
+  kind: quest
+  level: {min: 14, max: 30}
+  factions: [Horde]
+  goals: [any]
+  priority: low
+  where: {zone: The Barrens, waypoint: [46, 74], note: "Burned-Out Remains"}
+  done_when: {type: manual}
+  verified: {forever: false, note: "third-party reports only"}
+  sources: *wfl
+
+- id: general-riding-savings
+  title: Save 100 gold for riding at 40
+  why: Apprentice Riding is reported at 100 gold with the first mount included, 90 at Honored with your home city. Fresh economy, no main to fund you. Sell greens and cloth, vendor greys.
+  kind: gold
+  level: {min: 20, max: 40}
+  goals: [any]
+  priority: high
+  where: {note: "Undead buy from Velma Warnam in Brill"}
+  done_when: {type: money_at_least, copper: 1000000}
+  verified: {forever: false, note: "beta-era price"}
+  sources: ["https://www.method.gg/wow-forever/how-to-get-a-mount-in-wow-forever-cost-requirement-and-mount-options"]
+
+- id: general-legacy-point-25
+  title: Spend your first Legacy Point
+  why: New account-wide system. Reaching 25, 40 and 60 awards points; perks such as Talented and Well Rested help leveling. Spend them at your class trainer.
+  kind: setup
+  level: {min: 25, max: 60}
+  goals: [any]
+  priority: low
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *blizzard
+
+- id: general-vendor-and-auction-habit
+  title: Vendor greys, auction whites and greens
+  why: Launch-week prices are high and you need bags now and 100 gold by 40.
+  kind: habit
+  level: {min: 5, max: 40}
+  goals: [any]
+  priority: low
+  overdue: false
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: ["https://timesaver.gg/blog/wow-forever-mount-cost-gold-to-save"]
+
+- id: general-pvp-contested-zones
+  title: Hillsbrad is contested; expect Alliance
+  why: On a PvP ruleset, Hillsbrad Foothills and Ashenvale are where both factions quest at the same levels. Tarren Mill gets raided. Keep an escape ready and avoid Southshore.
+  kind: habit
+  level: {min: 20, max: 30}
+  factions: [Horde]
+  goals: [any]
+  tags: [pvp]
+  priority: normal
+  where: {zone: Hillsbrad Foothills}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *wfl
+
+- id: dungeon-ragefire-chasm
+  title: Run Ragefire Chasm when a group forms
+  why: Dungeon quests are a large share of Forever XP. Warlocks also pick up Hidden Enemies here for the Staff of Orgrimmar.
+  kind: dungeon
+  level: {min: 13, max: 19}
+  factions: [Horde]
+  goals: [dungeons]
+  priority: normal
+  where: {zone: Orgrimmar, note: "Cleft of Shadow"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *wiki
+
+- id: dungeon-ruins-of-lordaeron
+  title: Run Ruins of Lordaeron, the Undead home dungeon
+  why: New dungeon above the Undercity. Six Horde quests, four picked up in Tirisfal, Silverpine and the Undercity, so collect them when you pass through.
+  kind: dungeon
+  level: {min: 15, max: 20}
+  factions: [Horde]
+  goals: [dungeons]
+  priority: high
+  where: {zone: Tirisfal Glades, note: "Entrance above the Undercity"}
+  done_when: {type: manual}
+  verified: {forever: false, note: "level range 15-20 per wfl, 15-22 per wiki"}
+  sources: *wfl
+
+- id: dungeon-wailing-caverns
+  title: Run Wailing Caverns
+  why: On every Horde dungeon route's mandatory list for the low twenties.
+  kind: dungeon
+  level: {min: 19, max: 25}
+  factions: [Horde]
+  goals: [dungeons]
+  priority: normal
+  where: {zone: The Barrens}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *wiki
+
+- id: dungeon-shadowfang-keep
+  title: Run Shadowfang Keep
+  why: Horde quests from the Sepulcher, and one of the two Orb of Soran'ruk fragments for warlocks.
+  kind: dungeon
+  level: {min: 23, max: 29}
+  factions: [Horde]
+  goals: [dungeons]
+  priority: normal
+  where: {zone: Silverpine Forest}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *wiki

@@ -1,0 +1,352 @@
+# Warlock items. Spell IDs are Classic-era and carry verify notes until the probe confirms them.
+- id: warlock-imp-quest
+  title: Do the Imp class quest right away
+  why: Your first pet. Ranged damage plus the Blood Pact stamina buff. Keep it out at all times until 10.
+  kind: quest
+  level: {min: 1, max: 4}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: high
+  where: {zone: Tirisfal Glades, npc: Maximillion, waypoint: [30.8, 66.2], note: "Deathknell class trainer (Undead)"}
+  done_when: {type: spell_known, id: 688, verify: "probe spell.688 must read Summon Imp"}
+  verified: {forever: false}
+  sources: &tavern ["https://www.warcrafttavern.com/forever/guides/warlock-leveling/"]
+
+- id: warlock-train-immolate
+  title: Train Immolate
+  why: Your opener for the first nine levels. It costs 10 copper; sell starting gear if you are short.
+  kind: train
+  level: {min: 1, max: 6}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: high
+  where: {note: "Class trainer in your starting valley"}
+  done_when: {type: spell_known, id: 348, verify: "probe spell.348 must read Immolate"}
+  verified: {forever: false}
+  sources: &method ["https://www.method.gg/wow-forever/wow-forever-warlock-leveling-guide-and-talents"]
+
+- id: warlock-demon-skin-habit
+  title: Keep Demon Skin up
+  why: Armor plus health regeneration for thirty minutes. Demon Armor replaces it at 20.
+  kind: habit
+  level: {min: 1, max: 19}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  overdue: false
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-train-corruption
+  title: Train Corruption and Curse of Weakness
+  why: Corruption is your core DoT for sixty levels. Curse of Weakness blunts hard-hitting melee mobs.
+  kind: train
+  level: {min: 4, max: 8}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: high
+  done_when: {type: spell_known, id: 172, verify: "probe spell.172 must read Corruption"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-blood-pact-grimoire
+  title: Buy Grimoire of Blood Pact for the Imp
+  why: Demon trainers sell pet abilities as grimoires in Forever. The starting-valley trainer only carries Imp and Voidwalker books.
+  kind: train
+  level: {min: 4, max: 10}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  where: {zone: Tirisfal Glades, npc: Kayla Smithe, waypoint: [30.8, 66.4], note: "Deathknell demon trainer (Undead)"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-train-life-tap
+  title: Train Life Tap, and carry food
+  why: Turns health into mana and scales with Spirit in Forever. Tap between pulls, then eat the health back.
+  kind: train
+  level: {min: 6, max: 10}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: spell_known, id: 1454, verify: "probe spell.1454 must read Life Tap"}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-train-bane-of-agony
+  title: Train Bane of Agony
+  why: Renamed from Curse of Agony. Tags a mob instantly and ramps slowly, so the pet picks up threat. Pull with it, not with Immolate.
+  kind: train
+  level: {min: 8, max: 12}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  where: {zone: Tirisfal Glades, npc: Rupert Boch, waypoint: [61.6, 52.4], note: "Brill class trainer"}
+  done_when: {type: spell_known, id: 980, verify: "probe spell.980: renamed spell, ID may differ"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-train-fear
+  title: Train Fear
+  why: Your main crowd control, 20-yard range in Forever. Fear the second mob, kill the first.
+  kind: train
+  level: {min: 8, max: 12}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: spell_known, id: 5782, verify: "probe spell.5782 must read Fear"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-pull-with-bane-habit
+  title: Pull with Bane of Agony, pet in first
+  why: Immolate's upfront hit steals threat from the pet. Send the demon, Bane of Agony, Corruption, then wand.
+  kind: habit
+  level: {min: 8, max: 20}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  overdue: false
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-voidwalker-quest
+  title: "Do the Voidwalker quest: Halgar's Summons"
+  why: Your tank for the next ten levels. Take the Brill version; the Orgrimmar one sends you into Skull Rock.
+  kind: quest
+  level: {min: 10, max: 12}
+  classes: [WARLOCK]
+  races: [Scourge]
+  goals: [any]
+  priority: high
+  where: {zone: Tirisfal Glades, npc: Halgar, note: "Brill"}
+  done_when: {type: spell_known, id: 697, verify: "probe spell.697 must read Summon Voidwalker; probe quest.1470 title"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-healthstone
+  title: Train Create Healthstone and always carry one
+  why: Separate cooldown from potions. Healthstone ranks are numbered in Forever.
+  kind: train
+  level: {min: 10, max: 14}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: high
+  done_when: {type: spell_known, id: 6201, verify: "probe spell.6201: ranks renumbered in Forever, ID may differ"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-first-talent
+  title: Spend your first talent point in Improved Corruption
+  why: Instant Corruption at 5/5 is where every guide starts. Points come one per level from 10.
+  kind: talent
+  level: {min: 10, max: 11}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: high
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: ["https://timesaver.gg/tools/wow-forever/talent-calculator/warlock/affliction"]
+
+- id: warlock-improved-corruption
+  title: Finish Improved Corruption 5/5
+  why: Instant cast plus 10% damage. Maxroll and Tavern take it at 10 to 14; Method takes Suppression first.
+  kind: talent
+  level: {min: 11, max: 14}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: ["https://timesaver.gg/tools/wow-forever/talent-calculator/warlock/affliction"]
+
+- id: warlock-train-drain-soul
+  title: Train Drain Soul
+  why: Makes Soul Shards. In Forever any tick on a real mob can drop one and a kill always does. Channel rank 1 while the pet tanks to farm.
+  kind: train
+  level: {min: 10, max: 14}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: spell_known, id: 1120, verify: "probe spell.1120 must read Drain Soul"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-torment-ranks-habit
+  title: Buy every Torment rank when it appears
+  why: Torment threat steps every ten levels; a stale rank means the Voidwalker loses mobs to your DoTs.
+  kind: habit
+  level: {min: 12, max: 60}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  overdue: false
+  where: {zone: Tirisfal Glades, npc: Gina Lang, waypoint: [61.6, 52.6], note: "Brill demon trainer; Martha Strain in the Undercity"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-train-health-funnel
+  title: Train Health Funnel
+  why: Heals the pet from your health; generates reduced threat in Forever.
+  kind: train
+  level: {min: 12, max: 16}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  done_when: {type: spell_known, id: 755, verify: "probe spell.755 must read Health Funnel"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-train-drain-life
+  title: Train Drain Life
+  why: The drain-tanking tool from 30. Until then the wand stays your filler.
+  kind: train
+  level: {min: 14, max: 18}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: spell_known, id: 689, verify: "probe spell.689 must read Drain Life"}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-train-curse-of-recklessness
+  title: Train Curse of Recklessness
+  why: Cancels a Fear that runs the wrong way. Never put it on a mob you intend to Fear.
+  kind: train
+  level: {min: 14, max: 18}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  done_when: {type: spell_known, id: 704, verify: "probe spell.704 must read Curse of Recklessness"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-suppression-talents
+  title: Put the next talent points into Suppression
+  why: Hit chance plus reduced threat, which matters while a pet tanks. Maxroll takes four points at 15 to 18.
+  kind: talent
+  level: {min: 15, max: 19}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: ["https://timesaver.gg/tools/wow-forever/talent-calculator/warlock/affliction"]
+
+- id: warlock-train-unending-breath
+  title: Train Unending Breath
+  why: Makes the Undead water racial irrelevant and saves drownings in Silverpine and the Barrens.
+  kind: train
+  level: {min: 16, max: 20}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  done_when: {type: spell_known, id: 5697, verify: "probe spell.5697 must read Unending Breath"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-soulstone
+  title: Train Create Soulstone and keep one active
+  why: Battle resurrection for you or a friend.
+  kind: train
+  level: {min: 18, max: 22}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: spell_known, id: 693, verify: "probe spell.693: ranks renumbered in Forever, ID may differ"}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-gravestone-scepter
+  title: Get the Gravestone Scepter from Blackfathom Villainy
+  why: 29 DPS wand, the best before the mid-twenties. The quest opens at 18; expect to need to be higher.
+  kind: item
+  level: {min: 18, max: 26}
+  classes: [WARLOCK, MAGE, PRIEST]
+  goals: [any]
+  priority: normal
+  where: {zone: Ashenvale, note: "Blackfathom Deeps quest"}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-shards-habit
+  title: Keep two or three spare Soul Shards, never a bag full
+  why: Voidwalker, Sayaad and Felhunter summons each cost a shard, and Ritual of Summoning is the only way to summon players. A soul bag fits the reagent slot.
+  kind: habit
+  level: {min: 5, max: 60}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  overdue: false
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-sayaad-quest
+  title: "Do the Succubus or Incubus quest: Devourer of Souls or Hearts of the Lovers"
+  why: Highest-damage demon and the drain-tanking partner from 30. The Horde chain is eight quests across the Barrens and Stonetalon; grab both flight paths first.
+  kind: quest
+  level: {min: 20, max: 24}
+  classes: [WARLOCK]
+  factions: [Horde]
+  goals: [any]
+  priority: high
+  where: {zone: Undercity, note: "Quest starts in the Undercity for Undead"}
+  done_when: {type: spell_known, id: 712, verify: "probe spell.712 must read Summon Succubus; add Summon Incubus ID as any_of"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-train-demon-armor
+  title: Train Demon Armor
+  why: Replaces Demon Skin with more armor, shadow resistance and regeneration.
+  kind: train
+  level: {min: 20, max: 24}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: spell_known, id: 706, verify: "probe spell.706 must read Demon Armor"}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-train-curse-of-elements
+  title: Train Curse of the Elements
+  why: A Curse, so it sits next to your Bane. Covers every magic school in Forever; rank 3 at 40 is the opener on big mobs.
+  kind: train
+  level: {min: 20, max: 24}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: normal
+  done_when: {type: spell_known, id: 1490, verify: "probe spell.1490 must read Curse of the Elements"}
+  verified: {forever: false}
+  sources: *tavern
+
+- id: warlock-train-ritual-of-summoning
+  title: Train Ritual of Summoning
+  why: Meeting Stones no longer summon in Forever, so this is the only way to bring a friend to a dungeon.
+  kind: train
+  level: {min: 20, max: 30}
+  classes: [WARLOCK]
+  goals: [any]
+  priority: low
+  done_when: {type: spell_known, id: 698, verify: "probe spell.698 must read Ritual of Summoning"}
+  verified: {forever: false}
+  sources: *method
+
+- id: warlock-orb-of-soranruk
+  title: Pick up The Orb of Soran'ruk from Doan Karhan
+  why: Needs fragments from Blackfathom Deeps and Shadowfang Keep. Rewards a two-hander with 34 Shadow and Fire damage or an off-hand with a heal.
+  kind: quest
+  level: {min: 20, max: 30}
+  classes: [WARLOCK]
+  factions: [Horde]
+  goals: [any]
+  priority: normal
+  where: {zone: The Barrens, npc: Doan Karhan}
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: *tavern

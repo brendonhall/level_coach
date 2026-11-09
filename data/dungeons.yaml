@@ -1,1 +1,7 @@
-[]
+# Level ranges from warcraft.wiki.gg unless noted; Horde access notes from community guides.
+- {name: Ragefire Chasm, level: {min: 13, max: 19}, zone: Orgrimmar, new: false, access: "Cleft of Shadow"}
+- {name: Ruins of Lordaeron, level: {min: 15, max: 20}, zone: Undercity, new: true, access: "Horde home dungeon above the Undercity; six Horde quests", horde_quests_from: [Tirisfal Glades, Silverpine Forest, Undercity], verify: "range 15-20 per wowforeverleveling, 15-22 per wiki"}
+- {name: Wailing Caverns, level: {min: 19, max: 25}, zone: The Barrens, new: false}
+- {name: Shadowfang Keep, level: {min: 23, max: 29}, zone: Silverpine Forest, new: false, access: "Horde quests from The Sepulcher"}
+- {name: Blackfathom Deeps, level: {min: 25, max: 31}, zone: Ashenvale, new: false}
+- {name: City of Dalaran, level: {min: 28, max: 33}, zone: Alterac Mountains, new: true, access: "Attunement: Key to the City and Prison Break-In from Magus Wordeen Voidglare in Tarren Mill"}

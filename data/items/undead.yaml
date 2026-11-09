@@ -1,0 +1,45 @@
+# Items for Undead (race file name Scourge) characters.
+- id: undead-starter-gathering-manual
+  title: Do the starter gathering quest and pick a manual
+  why: New in Forever. A level 3 to 4 quest offers Herbalism, Mining or Skinning manuals worth 2 skill points. Herbalism or Skinning pays for riding later.
+  kind: profession
+  level: {min: 3, max: 8}
+  races: [Scourge]
+  goals: [any]
+  priority: normal
+  where: {zone: Tirisfal Glades, note: "Deathknell; trainers Florence Nightshade (Herbalism) and Walter Mason (Mining)"}
+  done_when:
+    type: any_of
+    of:
+      - {type: skill_line, name: Herbalism, min: 1}
+      - {type: skill_line, name: Mining, min: 1}
+      - {type: skill_line, name: Skinning, min: 1}
+  verified: {forever: false}
+  sources: ["https://wowforeverguides.com/leveling/starting-zones"]
+
+- id: undead-cannibalize-habit
+  title: Cannibalize after fights
+  why: Buffed in Forever to restore mana as well as health. With Life Tap this nearly removes downtime. Works on humanoid and undead corpses.
+  kind: habit
+  level: {min: 1, max: 60}
+  races: [Scourge]
+  goals: [any]
+  priority: low
+  overdue: false
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: ["https://www.warcrafttavern.com/forever/guides/warlock/"]
+
+- id: undead-will-of-forsaken-pvp
+  title: Keybind Will of the Forsaken
+  why: Breaks or prevents Charm, Fear and Sleep. On a PvP ruleset it is a free trinket; have it on a key before Hillsbrad.
+  kind: habit
+  level: {min: 10, max: 60}
+  races: [Scourge]
+  goals: [any]
+  tags: [pvp]
+  priority: low
+  overdue: false
+  done_when: {type: manual}
+  verified: {forever: false}
+  sources: ["https://www.warcrafttavern.com/forever/guides/warlock/"]

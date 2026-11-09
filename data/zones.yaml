@@ -1,1 +1,9 @@
-[]
+# Map IDs are Classic uiMapIDs; confirm each with the probe's loc.mapID when you are in the zone.
+- {name: Tirisfal Glades, faction: Horde, level: {min: 1, max: 10}, continent: Eastern Kingdoms, mapID: 1420, hubs: [Deathknell, Brill], new: false, verify: "probe loc.mapID"}
+- {name: Silverpine Forest, faction: Horde, level: {min: 10, max: 20}, continent: Eastern Kingdoms, mapID: 1421, hubs: [The Sepulcher], new: false, verify: "probe loc.mapID"}
+- {name: The Barrens, faction: Horde, level: {min: 10, max: 25}, continent: Kalimdor, mapID: 1413, hubs: [The Crossroads, Ratchet, Camp Taurajo], new: false, verify: "probe loc.mapID"}
+- {name: Stonetalon Mountains, faction: Contested, level: {min: 15, max: 27}, continent: Kalimdor, mapID: 1442, hubs: [Sun Rock Retreat], new: false, verify: "probe loc.mapID"}
+- {name: Ashenvale, faction: Contested, level: {min: 18, max: 30}, continent: Kalimdor, mapID: 1440, hubs: [Splintertree Post, Zoram'gar Outpost], new: false, verify: "probe loc.mapID"}
+- {name: Hillsbrad Foothills, faction: Contested, level: {min: 20, max: 30}, continent: Eastern Kingdoms, mapID: 1424, hubs: [Tarren Mill], new: false, verify: "probe loc.mapID"}
+- {name: Undercity, faction: Horde, level: {min: 1, max: 60}, continent: Eastern Kingdoms, mapID: 1458, hubs: [Magic Quarter], new: false, verify: "probe loc.mapID"}
+- {name: Orgrimmar, faction: Horde, level: {min: 1, max: 60}, continent: Kalimdor, mapID: 1454, hubs: [Cleft of Shadow], new: false, verify: "probe loc.mapID"}
