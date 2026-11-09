@@ -1,11 +1,12 @@
 # Level Coach: coach agent architecture (approach B1)
 
-**Status:** Draft v0, 2026-11-08. Companion to `2026-11-08-level-coach-design.md`. Explores the
-"agent server" idea Brendon raised and recommends a shape. Not approved yet.
+**Status:** Draft v0.2, 2026-11-09. Companion to `2026-11-08-level-coach-design.md`. Explores the
+"agent server" idea Brendon raised and settles its shape. Awaiting approval before any build.
 
-**Decisions this builds on (Brendon, 2026-11-08):** approach B1 (Claude Code on the existing
-subscription, no separate API key); personal use only for now; game runs on a Windows PC;
-development happens on a Linux box; first character is an Undead Affliction Warlock.
+**Decisions this builds on (Brendon, 2026-11-08 and 2026-11-09):** approach B1 (Claude Code on
+the existing subscription, no separate API key); personal use only for now; game on a Windows PC,
+development on Linux; first character an Undead Affliction Warlock; **GitHub as the bridge between
+the machines, Dropbox as the fallback**; **no Hardcore**; **trivial coach proposals auto-accept**.
 
 ---
 
@@ -17,103 +18,133 @@ that communicates with the addon" can only communicate through files, and only a
 - **Addon to coach:** WoW writes the addon's SavedVariables file on `/reload` and on logout.
 - **Coach to addon:** WoW reads the addon folder's `.lua` files at login and on `/reload`.
 
-Every architecture below is the same loop with different plumbing:
+Everything below is one loop. The bridge is a git repository, so every hop is a commit:
 
 ```
-  Windows gaming PC                                  Linux dev box
-  +-----------------------------+                    +-----------------------------------+
-  | WoW: Forever                |                    | coach daemon (Python)             |
-  |  LevelCoach addon           |                    |  1. notice a new export           |
-  |   writes SavedVariables  ---+--> bridge folder --+-> 2. parse snapshot, decide       |
-  |   on /reload or logout      |   (Dropbox,        |  3. run: claude -p "/coach ..."   |
-  |                             |    Syncthing,      |     subscription login,           |
-  |   reads Data/*.lua       <--+--  or SMB share) <-+-- 4. write Overlay.pending.lua    |
-  |   on login or /reload       |                    |     after validation              |
-  +-----------------------------+                    +-----------------------------------+
-         ^ /lc accept promotes pending items in game
+ Windows gaming PC                      GitHub (private repo)             Linux dev box
+ +------------------------------+       +----------------------+        +----------------------------+
+ | WoW: Forever + LevelCoach    |       | level_coach_sync     |        | coach daemon (Python)      |
+ |  writes SavedVariables    ---+--+    |  export/             |  <-----+- git fetch every minute    |
+ |  on /reload or logout        |  |    |   LevelCoach.lua     |        |  new export? parse (lupa)  |
+ |                              |  +--> |   snapshot.json      |        |  run: claude -p "/coach"   |
+ | watcher.ps1                  |       |  overlay/            |        |  validate, tier, commit    |
+ |  copy export, commit, push --+-----> |   Overlay.pending.lua| <------+- push                      |
+ |  pull every minute,          |       |  briefings/          |        |                            |
+ |  copy overlay into addon  <--+-----< |   2026-11-09T21.md   |        | (later: GitHub Actions     |
+ |  reads Data/*.lua on reload  |       +----------------------+        |  runs the same job)        |
+ +------------------------------+                                       +----------------------------+
 ```
 
-The player-visible cost is the **two-reload cycle**: one `/reload` to publish the export, a
-wait, then any later `/reload` or login to receive the result. There is no way for the addon
-to learn that a result is ready; it only sees the file on the next load. The design below
-makes that acceptable by running the coach after *every* export, so the next login always has
-the freshest plan without anyone asking for it.
+The player-visible cost is the **two-reload cycle**: one `/reload` publishes the export, the coach
+needs a minute or two, and any later `/reload` or login receives the result. The addon cannot
+learn that a result is ready; it only sees the file on the next load. The design makes this
+acceptable by running the coach after *every* export, so the next login always has the freshest
+plan, and by auto-applying the trivial tier so most updates need no decision at all.
 
-## 2. Where the coach runs: four options
+## 2. Why GitHub, and why a separate private repository
 
-| Option | Shape | Pros | Cons |
-|---|---|---|---|
-| **O1. Coach on the Windows PC** | Claude Code installed natively on Windows; a PowerShell or Python watcher runs `claude -p` there | No cross-machine plumbing; files are local | Second Claude Code login to maintain; Windows scripting; the repo must be cloned there anyway for the addon, so this is less bad than it sounds |
-| **O2. Linux reads the WoW folder directly** | Share the WoW folder over SMB (or SSH) and mount it on Linux; watcher polls it | Everything stays on the dev box; lowest latency | Both machines must be on; inotify does not work over SMB, so poll; half-written files must be handled |
-| **O3. Sync-folder bridge** (recommended) | A small Windows script copies the export into a synced folder (Dropbox or Syncthing) and copies results back; Linux watches the synced folder | Decoupled; survives either machine being off; Dropbox also makes O4 possible for free; Syncthing keeps everything on the LAN | Sync latency of a few seconds; Dropbox puts play data in the cloud |
-| **O4. Cloud coach** | A Claude Code cloud session or scheduled task reads the export through the Dropbox connector and writes the overlay back | No daemon anywhere; runs while both PCs are off | Scheduled tasks are coarse (hourly at best); play data in the cloud; another moving part to debug |
+Brendon suggested syncing through GitHub. It is the right call for this setup:
 
-**Recommendation:** O3, with Dropbox if it already runs on both machines (it is connected to
-Claude in this workspace, which suggests yes), otherwise Syncthing. Keep O2 as the fallback for
-LAN-only setups. Skip O1 so the gaming PC stays a plain game box. Keep O4 as an optional
-later experiment, not a dependency.
+- Git is already required on the Windows PC to deploy the addon (`git pull` into a clone that is
+  junctioned into `Interface\AddOns`). One mechanism instead of two.
+- The export history becomes a **play journal**: every commit is "character at level N in zone Z
+  with these items done". That is the breadcrumb timeline the design wants, for free, with diffs.
+- Any Claude Code session can run `/coach` by cloning: the Linux box, a cloud session, a phone.
+- GitHub Actions can later run the coach so the Linux box need not be on (Phase C).
+- No third-party sync client, no binary blobs, everything is text and reviewable.
 
-### Windows side of the bridge (O3)
+Costs: a git credential on the game PC (scope it to the sync repo); a commit per export (fine in a
+repo that holds nothing else); seconds of push and pull latency; two writers who must never share
+a path.
 
-A ten-line PowerShell script, registered as a scheduled task that runs at logon:
+**Privacy.** `brendonhall/level_coach` is **public** (checked 2026-11-09). The export is a play log
+with character name, ruleset, level, zones, quests and goals. Not secret, but not for a public
+repository. So the bridge is a **separate private repo, `level_coach_sync`**, holding only
+`export/`, `overlay/` and `briefings/`. The alternative, making `level_coach` private, would make
+publishing the addon later a history-surgery job. Rejected.
 
-1. Watch `World of Warcraft\<flavor>\WTF\Account\<ACCOUNT>\SavedVariables\LevelCoach.lua`
-   with a `FileSystemWatcher` (or poll every 30 seconds; WoW writes rarely).
-2. On change, wait until the file size is stable, then copy it to
-   `<bridge>\export\LevelCoach.lua`.
-3. Watch `<bridge>\overlay\Overlay.pending.lua` and copy it into
-   `Interface\AddOns\LevelCoach\Data\Overlay.pending.lua`.
+**Ownership rule.** `export/**` is written only by the Windows watcher. `overlay/**` and
+`briefings/**` are written only by the coach. No shared files means no merge conflicts; both
+sides still `git pull --rebase` before every push.
 
-Why a copy script and not NTFS junctions: a junction would have to point at the whole
-SavedVariables folder (every addon's data) or at a directory inside the addon, and both make the
-Dropbox client and WoW's own write-then-rename behavior harder to reason about. Copying two named
-files is explicit and easy to debug. The flavor folder name for Forever on disk is still to be
-confirmed in the live client (`_forever_` is what most guides show; `_classic_beta_` during beta).
+**Dropbox fallback.** Same three directories inside a Dropbox folder; the Windows script loses its
+git steps and keeps its two copies; the daemon watches the local Dropbox folder instead of
+fetching. Switching costs an afternoon and the addon does not change.
 
-## 3. The daemon (Python, on Linux)
+## 3. Windows side: `watcher.ps1`
+
+A PowerShell script registered as a scheduled task that starts at logon. It has three jobs:
+
+1. **Publish exports.** Watch
+   `<WoW>\_forever_\WTF\Account\<ACCOUNT>\SavedVariables\LevelCoach.lua` with a
+   `FileSystemWatcher`. On change, wait until the file size has been stable for two seconds (WoW
+   writes the file whole, but the watcher fires early), copy it to
+   `<sync clone>\export\LevelCoach.lua`, and if `git diff --quiet` reports a change, commit as
+   `export: <char> L<level> <zone> <timestamp>` and push after `git pull --rebase`.
+2. **Receive overlays.** Every sixty seconds `git pull --rebase` in the sync clone. If
+   `overlay\Overlay.pending.lua` changed, copy it to
+   `<WoW>\_forever_\Interface\AddOns\LevelCoach\Data\Overlay.pending.lua`. This is the one file
+   that crosses from the sync repo into the addon folder; everything else in the addon folder
+   comes from the code repo clone.
+3. **Deploy code.** On the same timer, `git pull --ff-only` in the code repo clone. Because the
+   addon folder is an NTFS junction into that clone, a push from Linux is live after the next
+   `/reload`.
+
+Credential: Git Credential Manager signed in to GitHub, or an SSH deploy key with write access to
+the sync repo only. Never a token with access to everything. The flavor folder name (`_forever_`
+per launch guides, `_classic_beta_` during beta) is confirmed from the Battle.net launcher's
+"Show in Explorer" before the script is written.
+
+## 4. Linux side: the daemon
 
 ```
-watch bridge/export/LevelCoach.lua
-  -> debounce, then parse it with lupa (Lua 5.1 in-process, sandboxed, no libraries)
-  -> build snapshot.json: level, class, race, zone, goals, completed items, skipped items,
-     breadcrumbs since the last run, and any explicit "sync requested" flag
-  -> decide: run the coach only if something meaningful changed (new level band, new zone,
-     changed goals, explicit request, or N days since last run); otherwise exit
-  -> run Claude Code headless from the repo root so CLAUDE.md and .claude/skills load:
-       claude -p "/coach snapshot.json" --output-format json \
+every 60 s: git fetch in the sync clone
+  -> new commit touching export/? pull it
+  -> parse export/LevelCoach.lua with lupa (Lua 5.1 in-process, empty environment, size cap;
+     the file must be a single table assignment, nothing else executes)
+  -> write export/snapshot.json: level, class, race, ruleset, zone, goals, completed and skipped
+     items, breadcrumbs since the previous run, explicit "sync requested" flag
+  -> decide: run only on a new level band, a new zone, changed goals, an explicit request, or
+     24 hours since the last run; otherwise commit snapshot.json and stop
+  -> run Claude Code headless from the code repo root, so CLAUDE.md and .claude/skills load:
+       claude -p "/coach <sync>/export/snapshot.json" --output-format json \
          --permission-mode dontAsk --permission-prompts none \
-         --allowedTools "Read,WebSearch,WebFetch(domain:...),Edit(//<bridge>/overlay/**)"
-  -> validate the produced Overlay.pending.lua with lupa before publishing it:
-       parses as a single table literal; only known item fields; no function calls;
-       every item has a source URL and verified=false; size under a cap
-  -> copy to bridge/overlay/ only if validation passes; log the briefing and the result JSON
+         --allowedTools "Read,WebSearch,WebFetch(domain:<allowlist>),Edit(//<sync>/overlay/**),Edit(//<sync>/briefings/**)"
+  -> validate overlay/Overlay.pending.lua (section 5); on failure keep the previous file and log
+  -> commit "coach: <n> items (<i> info, <s> suggest, <p> plan)" with the briefing, pull --rebase, push
 ```
 
-Design rules:
+Rules: at most a few runs per hour; keep the last N briefings; every failure leaves the previous
+overlay in place; recognize the "Login expired" result and notify rather than retry; never give
+the coach a Bash tool or a write path outside `overlay/` and `briefings/`.
 
-- **The coach proposes, the player disposes.** The daemon never writes `Overlay.lua`. It writes
-  `Overlay.pending.lua`. The addon loads both files, shows pending items in a "Proposed by your
-  coach" section, and `/lc accept` (per item or all) promotes them into SavedVariables. Review
-  happens in game, where the context is, with no terminal involved.
-- **Data in, data out.** The coach's only write permission is the overlay directory. It gets no
-  Bash tool. Fetched web pages are untrusted input; the permission rules and the validator are
-  the defense against a page that tries to steer the model.
-- **Idempotent and boring.** Rate-limit to a few runs per hour, keep the last N briefings, and
-  make every failure leave the previous overlay in place. If the daemon is down, the static plan
-  in the addon keeps working.
+## 5. Acceptance policy: trust tiers
 
-## 4. The `/coach` skill
+Decision (2026-11-09): trivial proposals auto-accept. "Trivial" is defined mechanically, not by
+judgment, so the daemon's validator and the addon can both enforce it:
 
-Lives in this repo at `.claude/skills/coach/SKILL.md`, so it works both from the daemon and
-interactively in any Claude Code session on the repo. Its contract:
+| Tier | What it may contain | Examples | Treatment in game |
+|---|---|---|---|
+| `info` | Only facts derived from the character's own state plus the shipped data: existing item IDs, detectors over current state, numbers from the snapshot. No URLs, no free-text `where`. | "Corruption rank 3 is available at your trainer." "Ruins of Lordaeron is now in your level range." "You have 95 of the 100 gold for riding." | **Auto-accepted** on load, shown with a small coach tag. `/lc trust none` turns this off. |
+| `suggest` | A new checklist item with web-sourced content: a quest, an item, a dungeon, a zone move. Must carry a source URL and `verified: false`. | "The Orb of Soran'ruk quest in the Barrens rewards a strong caster weapon at 20." | Pending in a "Proposed by your coach" section until `/lc accept <n>` or `/lc accept all`. |
+| `plan` | Anything that re-ranks, hides or rewrites existing items or changes goal weights. Must carry a one-line rationale. | "Move Scarlet Monastery ahead of Razorfen Kraul: it is next to your home city and matches your dungeons goal." | Pending and highlighted, with the before and after shown. |
 
-- **Input:** path to `snapshot.json`; the repo's `data/` YAML; the current `Overlay.pending.lua`
-  if any.
-- **Steps:** read the snapshot; compute the level band and what is overdue; check which goals
-  are active; research only the gaps (next band, missed class quests, dungeons in range, zone
-  move) against an allowlist of guide domains; write items in the project's schema with a
-  `why`, a `where`, a source URL and `verified: false`; write a short Markdown briefing.
-- **Output:** `Overlay.pending.lua` and `briefing.md`. Nothing else.
+The validator demotes any `info` item that contains a URL or free text to `suggest`, and rejects
+the whole overlay if an item lacks a tier. The addon re-checks tiers on load, because the overlay
+is data that arrived from outside the sandbox. Pending items expire when the character levels
+past their window; expired items are reported back in the next export so the coach learns.
+
+## 6. The `/coach` skill
+
+Lives in the code repo at `.claude/skills/coach/SKILL.md`, so it works from the daemon, from a
+GitHub Action, and interactively in any Claude Code session on the repo.
+
+- **Input:** path to `snapshot.json`; the code repo's `data/` YAML; the current pending overlay.
+- **Steps:** read the snapshot; compute the level band and what is overdue; check active goals;
+  research only the gaps (next band, missed class quests, dungeons in range, zone move) against
+  the guide-site allowlist; write items in the project schema with `why`, `where`, `trust`, a
+  source URL for web-derived items and `verified: false`; write a short Markdown briefing.
+- **Output:** `overlay/Overlay.pending.lua` and `briefings/<timestamp>.md`. Nothing else.
 
 Headless facts this relies on, from the Claude Code docs (checked 2026-11-08):
 
@@ -123,51 +154,54 @@ Headless facts this relies on, from the Claude Code docs (checked 2026-11-08):
   `--permission-mode dontAsk` denies anything not pre-approved instead of hanging;
   `--permission-prompts none` tells the model not to retry denied actions.
 - `--output-format json` returns the result, session id and metadata for logging.
-- `--dangerously-skip-permissions` is documented for isolated containers only; it is not
-  appropriate for a daemon that reads the web.
+- `--dangerously-skip-permissions` is documented for isolated containers only; a daemon that
+  reads the web does not qualify.
 
-## 5. Authentication and terms
+## 7. Authentication and terms
 
 - The subscription login is the default credential for Pro and Max users, and `-p` mode uses it.
-  For an unattended daemon, `claude setup-token` issues a one-year OAuth token that the daemon
-  can hold in its environment.
+  For an unattended daemon, `claude setup-token` issues a one-year OAuth token for CI and scripts.
 - `ANTHROPIC_API_KEY` outranks the login whenever it is set, and in `-p` mode it is always used
-  when present. The daemon must run with that variable unset.
+  when present. The daemon runs with that variable unset.
 - The docs say third-party products may not offer claude.ai login or rate limits, including
   agents built on the Claude Agent SDK, and must use API keys. They do not state whether a
-  person's own local automation under their own login is covered. This is a gray area to read
-  up on before the daemon runs unattended; if Level Coach is ever shared with other players, the
-  companion becomes B2 with API keys.
-- A login can expire. The daemon should recognize the "Login expired" result and notify rather
-  than retry.
-- The Python Agent SDK (`claude-agent-sdk`) is documented with an API key; the docs do not say
-  it accepts the local login. That is why the daemon shells out to `claude -p` instead.
+  person's own local automation under their own login is covered. Read the usage policy before
+  the daemon runs unattended; if Level Coach is ever shared, the companion becomes B2 with keys.
+- A login can expire; the daemon treats "Login expired" as a notification, not a retry.
+- The Python Agent SDK is documented with an API key only, so the daemon shells out to `claude -p`.
+- For Phase C, confirm in the Claude Code GitHub Actions documentation that the official action
+  accepts a `setup-token` OAuth token for a personal repository before storing one as a secret.
 
-## 6. Failure modes and UX
+## 8. Failure modes
 
 | Situation | Behavior |
 |---|---|
-| Daemon or bridge down | Nothing changes in game; static plan continues; the panel shows the age of the last coach update |
-| Coach output fails validation | Not published; logged; previous pending file kept |
-| Overlay older than the character's state (player leveled past it) | Addon marks the pending section as stale and hides items whose window has passed |
-| Player never reloads | Export never updates; the coach never runs; the addon can suggest `/reload` on level-up or at logout time |
-| Research finds nothing new | Coach writes an empty overlay and a briefing saying so; no reload nag |
+| Daemon, Linux box or GitHub unreachable | Nothing changes in game; the static plan continues; the panel shows the age of the last coach update |
+| Export half-written when the watcher fires | Size-stable wait, then the Lua parse must succeed before commit; otherwise retry on the next change |
+| Push rejected (other side pushed first) | `git pull --rebase`, retry once; the ownership rule makes the rebase trivial |
+| Coach output fails validation | Not committed; logged; previous pending file kept |
+| Overlay older than the character's state | Addon hides items whose window has passed and reports them as expired in the next export |
+| Player never reloads | Export never updates and the coach never runs; the addon suggests `/reload` on level-up and at logout |
+| Research finds nothing new | Empty overlay plus a briefing saying so; no reload nag |
+| Login expired | Daemon logs and notifies; no retries until re-login |
 
-## 7. Phases
+## 9. Phases
 
-- **Phase A, manual coach.** Bridge in place; Brendon runs `/coach` interactively in Claude Code
-  on the Linux box and reviews the briefing. Proves the value and tunes the skill before any
-  automation exists.
-- **Phase B, daemon.** Watcher, validator, pending overlay, `/lc accept` in the addon.
-- **Phase C, optional.** Cloud scheduled coach via Dropbox, if the daemon ever feels like a chore.
+- **Phase A, manual coach.** Private sync repo, `watcher.ps1`, addon export. Brendon runs
+  `/coach` interactively in Claude Code on Linux and reads the briefing. Proves the value and
+  tunes the skill before any automation exists.
+- **Phase B, daemon.** The fetch loop, lupa parser, validator, tiers, `/lc accept` and
+  `/lc trust` in the addon.
+- **Phase C, GitHub Actions runner.** The same job triggered by a push to `export/**`, so the
+  Linux box need not be on. Terms check first (section 7).
+- **Phase D, optional.** Dropbox fallback if git on the game PC becomes a chore.
 
-## 8. Open questions
+## 10. Open questions
 
-1. Dropbox or Syncthing for the bridge? (Dropbox if it is already on both machines.)
-2. Should low-risk proposals (for example "train new rank of Corruption") auto-accept, or does
-   everything go through `/lc accept`? Default: everything, until trust is earned.
-3. Is the Windows PC usually on with the sync client running while Brendon plays? (Yes is
-   implied, but the Linux box also needs to be on for the coach to run.)
+1. Is the Linux box usually on while you play? If not, Phase C follows Phase A directly and the
+   daemon is skipped.
+2. Confirm the separate private sync repository (`level_coach_sync`) rather than making this
+   repo private.
 
 ## Sources
 

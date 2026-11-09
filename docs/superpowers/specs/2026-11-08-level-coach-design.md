@@ -1,6 +1,6 @@
 # Level Coach: design brainstorm
 
-**Status:** Draft v0.2, 2026-11-08. Brainstorm output plus Brendon's first round of decisions
+**Status:** Draft v0.3, 2026-11-09. Brainstorm output plus Brendon's decisions from two rounds
 (§0). Not yet an approved design: nothing gets built until Brendon approves this document and
 the companion note `2026-11-08-coach-agent-architecture.md`. After approval the next step is an
 implementation plan (Superpowers `writing-plans`), not code.
@@ -23,6 +23,9 @@ Brendon answered the first round of questions. These are now constraints, not op
 | Distribution | Personal use while the concept is worked out. No CurseForge packaging, no library vendoring beyond what the UI needs. |
 | Machines | Game on Windows. Development on Linux. The addon is deployed to the Windows PC; the coach runs on Linux. |
 | Lua tooling | Not installed. Lua tests run from pytest through `lupa`, which embeds Lua 5.1 (verified 2026-11-08: `lupa` 2.8 exposes `lupa.lua51` and ships Linux and Windows wheels). No separate Lua install needed. |
+| Bridge between machines | **GitHub.** A separate private repository (`level_coach_sync`) carries the export and the coach's overlay, because `level_coach` is public. Dropbox is the fallback. Details in the architecture note. |
+| Hardcore | Out of scope. No Hardcore items and no safety profile in the interview. |
+| Coach proposals | Three trust tiers. `info` items (derived from the character's own state and shipped data) auto-accept; `suggest` and `plan` items wait for `/lc accept`. |
 
 ## 1. Intent
 
@@ -382,7 +385,8 @@ level_coach/
       Items.lua                  # GENERATED from data/*.yaml, do not edit
       Zones.lua                  # GENERATED
       Overlay.lua                # accepted coach items (the B seam); empty by default
-      Overlay.pending.lua        # coach proposals awaiting /lc accept; empty by default
+      Overlay.pending.lua        # coach proposals, copied in from the private sync repo;
+                                 # info tier auto-applies, others wait for /lc accept
     UI/
       Panel.lua                  # checklist frame
       Wizard.lua                 # interview frame
@@ -480,7 +484,8 @@ game.
    of Forever is unreliable (the game is days old).
 3. Propose plan overlay items and plain-language notes ("you skipped both dungeons in your
    range; if the goal is still dungeons-with-friends, Wailing Caverns is the next window").
-4. The coach writes `Overlay.pending.lua`; Brendon reviews in game and promotes items with
+4. The coach commits `Overlay.pending.lua` to the private sync repo; the Windows watcher copies
+   it into the addon folder. `info` items apply on load; Brendon promotes the rest in game with
    `/lc accept`.
 5. `/reload` in game.
 
@@ -519,17 +524,18 @@ players without Claude Code.
 
 ## 8. Open questions
 
-Round one (approach, character, routing addons, companion flavor, licensing, distribution,
-dev setup) was answered on 2026-11-08; see §0. Remaining:
+Rounds one and two (approach, character, routing addons, companion flavor, licensing,
+distribution, dev setup, bridge, Hardcore, acceptance policy) are answered; see §0. Remaining:
 
-1. **Bridge between the machines.** Dropbox or Syncthing for the export and overlay files?
-   (Architecture note, §2.)
-2. **Hardcore.** Any intention to try the Hardcore ruleset when it arrives? It changes the
-   checklist's priorities (safety items) and is cheap to plan for now.
-3. **Review model for coach proposals.** Everything through `/lc accept`, or auto-accept
-   trivial items such as new spell ranks? Default: everything.
-4. **Goal profile.** The interview answers for this character (§5.1), so the first dataset
-   can be ranked for the way Brendon actually wants to play.
+1. **Goal profile and ruleset.** The interview answers for this character (§5.1), so the first
+   dataset is ranked for the way Brendon actually plays. Proposed defaults, to confirm or edit:
+   main aim "Learn the game at my own pace" with "Experience the story and new content" second;
+   guidance "milestones plus zone suggestions" until a routing addon is installed; professions
+   "Tailoring and Enchanting" (the guides' default for a warlock); dungeons "when convenient";
+   PvP "no"; sessions "one to three hours". Ruleset (Normal, PvP or RP) is not yet known and
+   decides whether PvP items appear at all.
+2. **Approval.** This document and the architecture note, so the implementation plan can be
+   written.
 
 ## 9. Roadmap sketch (phases, not a plan)
 
@@ -546,8 +552,8 @@ dev setup) was answered on 2026-11-08; see §0. Remaining:
 - **Phase 4, companion B1 (days):** the `/coach` skill, the file bridge, then the daemon,
   as laid out in `2026-11-08-coach-agent-architecture.md`. Proposals land in
   `Overlay.pending.lua` and are accepted in game.
-- **Later:** B2 if other players want the companion; CurseForge release; Hardcore ruleset
-  items; Legacy-system awareness for alts.
+- **Later:** B2 if other players want the companion; CurseForge release; Legacy-system
+  awareness for alts.
 
 ## 10. Sources
 
