@@ -14,4 +14,5 @@ Data\Overlay.lua
 Data\Overlay.pending.lua
 Core\Detectors.lua
 Core\Engine.lua
+Core\State.lua
 Core\Probe.lua

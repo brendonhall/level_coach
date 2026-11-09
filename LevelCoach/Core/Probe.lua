@@ -116,7 +116,8 @@ function Probe.run()
   ns.print(count .. " probe entries stored. Open a flight master's map once, then /reload to save them.")
 end
 
-ns.registerEvent("TAXIMAP_OPENED", function()
+-- Called from Init's TAXIMAP_OPENED handler (one handler per event lives in Init).
+function Probe.onTaxiMap()
   local ok, n = pcall(NumTaxiNodes)
   if not ok then
     return
@@ -129,7 +130,7 @@ ns.registerEvent("TAXIMAP_OPENED", function()
   LevelCoachDB.probe = LevelCoachDB.probe or {}
   LevelCoachDB.probe.taxi = table.concat(names, "; ")
   ns.print("recorded " .. #names .. " taxi nodes")
-end)
+end
 
 ns.commands.probe = function()
   Probe.run()
