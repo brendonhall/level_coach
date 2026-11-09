@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: Level Coach
+## Notes: A leveling coach: goal-based checklists from your character's real state.
+## Author: Brendon Hall
+## Version: 0.0.1
+## SavedVariables: LevelCoachDB
+## SavedVariablesPerCharacter: LevelCoachCharDB
+## IconTexture: Interface\Icons\INV_Misc_Book_09
+Core\Init.lua
+Core\Probe.lua
