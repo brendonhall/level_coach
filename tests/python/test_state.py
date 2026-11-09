@@ -49,6 +49,27 @@ def test_slash_lc_prints_now_and_marks_done(wow_fixture):
     assert g.LevelCoachCharDB.skipped["general-first-aid"] is True
 
 
+def test_snooze_undo_and_unknown_command(wow_fixture):
+    lua = load_all(wow_fixture)
+    g = lua.rt.globals()
+    g.SlashCmdList.LEVELCOACH("")
+    g.SlashCmdList.LEVELCOACH("snooze 1 2")
+    snoozed = dict(g.LevelCoachCharDB.snoozedUntil.items())
+    assert len(snoozed) == 1 and all(v > 7000 for v in snoozed.values())
+    g.SlashCmdList.LEVELCOACH("done 2")
+    g.SlashCmdList.LEVELCOACH("undo 2")
+    assert len(list(g.LevelCoachCharDB.manualDone.keys())) == 0
+    g.SlashCmdList.LEVELCOACH("skipp 3")
+    assert any("unknown command" in line for line in chat(lua))
+
+
+def test_pvp_ruleset_is_inferred_from_the_client(wow_fixture):
+    lua = load_all(wow_fixture)
+    assert lua.ns.effectiveGoals(lua.ns.State.snapshot()).pvpRuleset is True
+    lua.rt.execute('function GetRealmName() return "Normal" end')
+    assert lua.ns.effectiveGoals(lua.ns.State.snapshot()).pvpRuleset is False
+
+
 def test_level_up_event_prints_now_section(wow_fixture):
     lua = load_all(wow_fixture)
     g = lua.rt.globals()

@@ -30,22 +30,31 @@ local function try(label, fn)
     store(label, "ERR " .. tostring(r1))
     return
   end
-  local parts = {}
-  for _, v in ipairs({ r1, r2, r3, r4 }) do
-    parts[#parts + 1] = tostring(v)
+  local values = { r1, r2, r3, r4 }
+  local last = 0
+  for i = 1, 4 do
+    if values[i] ~= nil then
+      last = i
+    end
   end
-  -- ipairs stops at the first nil, so trailing nils are dropped and leading values kept.
-  store(label, #parts > 0 and table.concat(parts, " | ") or "nil")
+  local parts = {}
+  for i = 1, last do
+    parts[i] = tostring(values[i])
+  end
+  store(label, last > 0 and table.concat(parts, " | ") or "nil")
 end
 
 function Probe.run()
   LevelCoachDB.probe = {}
   count = 0
-  LevelCoachDB.probe.when = (type(date) == "function" and date("%Y-%m-%d %H:%M:%S")) or tostring(time and time() or 0)
+  LevelCoachDB.probe.when = (type(date) == "function" and date("%Y-%m-%d %H:%M:%S"))
+    or tostring(time and time() or 0)
 
   try("build.info", function() return GetBuildInfo() end)
   try("build.toc", function() return select(4, GetBuildInfo()) end)
-  try("build.projectIDs", function() return WOW_PROJECT_ID, WOW_PROJECT_CAMELOT, WOW_PROJECT_MAINLINE, WOW_PROJECT_CLASSIC end)
+  try("build.projectIDs", function()
+    return WOW_PROJECT_ID, WOW_PROJECT_CAMELOT, WOW_PROJECT_MAINLINE, WOW_PROJECT_CLASSIC
+  end)
   try("build.foreverPresetFn", function() return type(C_GameRules and C_GameRules.GetForeverExperiencePreset) end)
   try("build.gameMode", function() return C_GameRules.GetActiveGameMode() end)
   try("build.realm", function() return GetRealmName() end)
@@ -77,7 +86,9 @@ function Probe.run()
     end)
   end
 
-  try("skill.fns", function() return type(GetNumSkillLines), type(GetSkillLineInfo), type(GetProfessions), type(GetProfessionInfo) end)
+  try("skill.fns", function()
+    return type(GetNumSkillLines), type(GetSkillLineInfo), type(GetProfessions), type(GetProfessionInfo)
+  end)
   try("skill.lines", function()
     if type(GetNumSkillLines) ~= "function" then return "n/a" end
     local out = {}
@@ -116,20 +127,19 @@ function Probe.run()
   ns.print(count .. " probe entries stored. Open a flight master's map once, then /reload to save them.")
 end
 
--- Called from Init's TAXIMAP_OPENED handler (one handler per event lives in Init).
+-- Called from Init's TAXIMAP_OPENED handler after State.recordTaxiNodes has run.
 function Probe.onTaxiMap()
-  local ok, n = pcall(NumTaxiNodes)
-  if not ok then
+  if not (ns.State and LevelCoachDB) then
     return
   end
   local names = {}
-  for i = 1, (n or 0) do
-    local ok2, nm = pcall(TaxiNodeName, i)
-    names[#names + 1] = ok2 and tostring(nm) or "?"
+  for name in pairs(ns.State.charDB().taxiNodes) do
+    names[#names + 1] = name
   end
+  table.sort(names)
   LevelCoachDB.probe = LevelCoachDB.probe or {}
   LevelCoachDB.probe.taxi = table.concat(names, "; ")
-  ns.print("recorded " .. #names .. " taxi nodes")
+  ns.print("known taxi nodes recorded: " .. #names)
 end
 
 ns.commands.probe = function()

@@ -40,6 +40,14 @@ def test_build_requires_verify_note_on_numeric_detectors(tmp_path, valid_item_ya
         build(tmp_path, tmp_path / "out")
 
 
+def test_missing_top_level_file_is_an_error(tmp_path, valid_item_yaml):
+    (tmp_path / "items").mkdir()
+    (tmp_path / "items" / "a.yaml").write_text(valid_item_yaml, encoding="utf-8")
+    (tmp_path / "zones.yaml").write_text("[]")
+    with pytest.raises(BuildError, match="dungeons.yaml"):
+        build(tmp_path, tmp_path / "out")
+
+
 def test_verified_items_need_no_verify_note(tmp_path, valid_item_yaml):
     yaml_text = valid_item_yaml.replace('    verify: "probe: name must be Summon Voidwalker"\n', "")
     yaml_text = yaml_text.replace("verified: {forever: false}", "verified: {forever: true, by: brendon, date: '2026-11-20'}")

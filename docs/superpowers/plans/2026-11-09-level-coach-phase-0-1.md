@@ -4,6 +4,12 @@
 > superpowers:subagent-driven-development if that execution method is chosen). Steps are
 > checkboxes; tick them as you go. Follow the TDD order in each task.
 
+**Execution status (2026-11-09, native):** Tasks 1, 2, 5 to 12 implemented and green (70 tests,
+luacheck clean, data check current). Task 3 and Task 4 wait for Brendon at the game PC: the deploy
+page and the probe-results template exist, the probe has not run. Task 11's in-game check and
+Task 12's first CI run are also pending the game PC and the next push. A whole-branch review found
+ten issues, all fixed in the follow-up commit.
+
 **Goal:** a WoW: Forever addon whose pure-Lua engine turns a character snapshot plus a goal
 profile into a Now / Soon / Overdue / Done checklist from YAML-authored guide data, with the
 data pipeline, tests and CI in place, and the live client's API probed first.

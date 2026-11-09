@@ -54,7 +54,7 @@ def _check_verify(item: dict, path: pathlib.Path) -> None:
 
 def _validated_list(path: pathlib.Path, kind: str) -> list[dict]:
     if not path.exists():
-        return []
+        raise BuildError(f"{path.name}: missing; create it with an empty list ([]) if there is nothing to add")
     entries = load_yaml(path)
     if not isinstance(entries, list):
         raise BuildError(f"{path.name}: expected a list of {kind} entries")

@@ -88,6 +88,8 @@ end
 
 local function skills()
   if type(GetNumSkillLines) == "function" and type(GetSkillLineInfo) == "function" then
+    -- Collapsed headers hide their children from the enumeration; expand them all first.
+    call(ExpandSkillHeader, 0)
     local out = {}
     for i = 1, (call(GetNumSkillLines) or 0) do
       local name, isHeader, _, rank = call(GetSkillLineInfo, i)

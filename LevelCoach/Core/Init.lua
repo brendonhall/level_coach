@@ -9,7 +9,8 @@ ns.commands = {}
 -- Goal profile used until the interview (Phase 2) writes LevelCoachCharDB.goals.
 ns.defaultGoals = {
   aim = "learn", secondary = "story", guidance = "zones", professions = "craft",
-  dungeons = "convenient", battlegrounds = false, session = "medium", pvpRuleset = true,
+  dungeons = "convenient", battlegrounds = false, session = "medium",
+  -- pvpRuleset is left nil here and inferred from the client's ruleset until the interview sets it.
 }
 
 function ns.print(msg)
@@ -35,6 +36,21 @@ function ns.goals()
   return (LevelCoachCharDB and LevelCoachCharDB.goals) or ns.defaultGoals
 end
 
+-- The goal profile with unanswered questions filled from the snapshot (today: the PvP ruleset).
+function ns.effectiveGoals(snapshot)
+  local goals = ns.goals()
+  if goals.pvpRuleset ~= nil then
+    return goals
+  end
+  local merged = {}
+  for k, v in pairs(goals) do
+    merged[k] = v
+  end
+  local ruleset = snapshot and snapshot.ruleset
+  merged.pvpRuleset = type(ruleset) == "string" and ruleset:lower():find("pvp", 1, true) ~= nil or false
+  return merged
+end
+
 local function ready()
   return ns.State ~= nil and ns.Engine ~= nil
 end
@@ -50,8 +66,20 @@ function ns.refresh()
   end
   ns.dirty = false
   ns.lastSnapshot = ns.State.snapshot()
-  ns.lastResult = ns.Engine.evaluate(ns.lastSnapshot, ns.goals(), ns.State.allItems())
+  ns.lastResult = ns.Engine.evaluate(ns.lastSnapshot, ns.effectiveGoals(ns.lastSnapshot), ns.State.allItems())
   return ns.lastResult
+end
+
+-- Coalesces bursts of state events (looting fires several in a row) into one refresh.
+function ns.requestRefresh()
+  if ns.refreshPending then
+    return
+  end
+  ns.refreshPending = true
+  C_Timer.After(0.5, function()
+    ns.refreshPending = false
+    ns.refresh()
+  end)
 end
 
 local function describe(entry, index)
@@ -108,7 +136,8 @@ local function resolveID(token)
   return nil
 end
 
-local function mark(field, token, value, verb)
+-- fields: list of CharDB field names to set to value for the resolved item.
+local function mark(fields, token, value, verb)
   if not ready() then
     return
   end
@@ -117,7 +146,10 @@ local function mark(field, token, value, verb)
     ns.print("no such item: " .. tostring(token) .. " (use the number from /lc or the item id)")
     return
   end
-  ns.State.charDB()[field][id] = value
+  local db = ns.State.charDB()
+  for _, field in ipairs(fields) do
+    db[field][id] = value
+  end
   ns.print(verb .. " " .. id)
   ns.refresh()
 end
@@ -133,25 +165,25 @@ ns.commands.soon = function()
   end
 end
 ns.commands.done = function(rest)
-  mark("manualDone", rest, true, "marked done:")
+  mark({ "manualDone" }, rest, true, "marked done:")
 end
 ns.commands.undo = function(rest)
-  mark("manualDone", rest, nil, "unmarked:")
-  mark("skipped", rest, nil, "unskipped:")
+  mark({ "manualDone", "skipped", "snoozedUntil" }, rest, nil, "cleared:")
 end
 ns.commands.skip = function(rest)
-  mark("skipped", rest, true, "skipped:")
+  mark({ "skipped" }, rest, true, "skipped:")
 end
 ns.commands.snooze = function(rest)
   local token, hours = rest:match("^(%S+)%s*(%S*)$")
   local seconds = (tonumber(hours) or 24) * 3600
   local now = (type(time) == "function" and time()) or 0
-  mark("snoozedUntil", token, now + seconds, "snoozed:")
+  mark({ "snoozedUntil" }, token, now + seconds, "snoozed:")
 end
 ns.commands.goals = function()
   local g = ns.goals()
   local parts = {}
-  for _, key in ipairs({ "aim", "secondary", "guidance", "professions", "dungeons", "battlegrounds", "session", "pvpRuleset" }) do
+  local keys = { "aim", "secondary", "guidance", "professions", "dungeons", "battlegrounds", "session", "pvpRuleset" }
+  for _, key in ipairs(keys) do
     parts[#parts + 1] = key .. "=" .. tostring(g[key])
   end
   ns.print("goals: " .. table.concat(parts, ", ") .. " (interview comes in a later version)")
@@ -169,7 +201,8 @@ end
 
 ns.commands.help = function()
   ns.print("commands: " .. table.concat(ns.commandNames(), ", "))
-  ns.print("/lc shows the checklist. done, undo, skip and snooze take the number from the listing or an item id; snooze takes optional hours.")
+  ns.print("/lc shows the checklist. done, undo, skip and snooze take the number from the listing or an item id;"
+    .. " snooze takes optional hours.")
 end
 
 ns.registerEvent("ADDON_LOADED", function(name)
@@ -203,7 +236,7 @@ end)
 for _, event in ipairs({ "QUEST_TURNED_IN", "SPELLS_CHANGED", "SKILL_LINES_CHANGED", "PLAYER_MONEY",
   "HEARTHSTONE_BOUND", "BAG_UPDATE_DELAYED" }) do
   ns.registerEvent(event, function()
-    ns.refresh()
+    ns.requestRefresh()
   end)
 end
 
@@ -211,7 +244,7 @@ ns.registerEvent("ZONE_CHANGED_NEW_AREA", function()
   if ns.State then
     ns.State.recordZone()
   end
-  ns.refresh()
+  ns.requestRefresh()
 end)
 
 ns.registerEvent("TAXIMAP_OPENED", function()
@@ -234,6 +267,11 @@ SlashCmdList["LEVELCOACH"] = function(msg)
   msg = msg or ""
   local cmd, rest = msg:match("^(%S*)%s*(.-)$")
   cmd = (cmd or ""):lower()
-  local fn = ns.commands[cmd] or ns.commands[""]
+  local fn = ns.commands[cmd]
+  if not fn then
+    ns.print("unknown command '" .. cmd .. "'")
+    ns.commands.help()
+    return
+  end
   fn(rest or "")
 end
