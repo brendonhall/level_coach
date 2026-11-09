@@ -12,4 +12,5 @@ Data\Zones.lua
 Data\Dungeons.lua
 Data\Overlay.lua
 Data\Overlay.pending.lua
+Core\Detectors.lua
 Core\Probe.lua
