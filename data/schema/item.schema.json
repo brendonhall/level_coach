@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://level-coach.local/schema/item.schema.json",
+  "title": "Level Coach checklist item",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "why", "kind", "level", "done_when", "verified", "sources"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 120},
+    "why": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["train", "quest", "item", "zone", "dungeon", "gold", "habit", "setup", "talent", "profession"]},
+    "level": {"$ref": "#/$defs/level"},
+    "classes": {"type": "array", "items": {"enum": ["WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID"]}},
+    "races": {"type": "array", "items": {"enum": ["Scourge", "Orc", "Troll", "Tauren", "Human", "Dwarf", "Gnome", "NightElf", "Skyborne"]}},
+    "factions": {"type": "array", "items": {"enum": ["Horde", "Alliance"]}},
+    "goals": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "tags": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "priority": {"enum": ["high", "normal", "low"], "default": "normal"},
+    "overdue": {"type": "boolean", "default": true},
+    "where": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zone": {"type": "string"},
+        "npc": {"type": "string"},
+        "waypoint": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+        "mapID": {"type": "integer"},
+        "note": {"type": "string"}
+      }
+    },
+    "done_when": {"$ref": "#/$defs/detector"},
+    "verified": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["forever"],
+      "properties": {
+        "forever": {"type": "boolean"},
+        "by": {"type": ["string", "null"]},
+        "date": {"type": ["string", "null"]},
+        "note": {"type": "string"}
+      }
+    },
+    "sources": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^https?://"}}
+  },
+  "$defs": {
+    "level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": {"type": "integer", "minimum": 1, "maximum": 60},
+        "max": {"type": "integer", "minimum": 1, "maximum": 60}
+      }
+    },
+    "verify": {"type": "string", "minLength": 1},
+    "detector": {
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        {"additionalProperties": false, "required": ["type", "id"], "properties": {"type": {"const": "quest_complete"}, "id": {"type": "integer"}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type", "id"], "properties": {"type": {"const": "spell_known"}, "id": {"type": "integer"}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type", "name", "min"], "properties": {"type": {"const": "skill_line"}, "name": {"type": "string"}, "min": {"type": "integer", "minimum": 1}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type", "n"], "properties": {"type": {"const": "level_at_least"}, "n": {"type": "integer", "minimum": 1, "maximum": 60}}},
+        {"additionalProperties": false, "required": ["type", "zone"], "properties": {"type": {"const": "bind_location"}, "zone": {"type": "string"}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type", "id"], "properties": {"type": {"const": "has_item"}, "id": {"type": "integer"}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type", "copper"], "properties": {"type": {"const": "money_at_least"}, "copper": {"type": "integer", "minimum": 1}}},
+        {"additionalProperties": false, "required": ["type", "zone"], "properties": {"type": {"const": "zone_visited"}, "zone": {"type": "string"}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type", "node"], "properties": {"type": {"const": "taxi_known"}, "node": {"type": "string"}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type"], "properties": {"type": {"const": "manual"}, "verify": {"$ref": "#/$defs/verify"}}},
+        {"additionalProperties": false, "required": ["type", "of"], "properties": {"type": {"const": "any_of"}, "of": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/detector"}}}},
+        {"additionalProperties": false, "required": ["type", "of"], "properties": {"type": {"const": "all_of"}, "of": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/detector"}}}}
+      ]
+    }
+  }
+}

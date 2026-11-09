@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://level-coach.local/schema/goals.schema.json",
+  "title": "Level Coach goal profile (interview answers)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["aim"],
+  "properties": {
+    "aim": {"enum": ["learn", "story", "fast", "dungeons", "raid-prep"]},
+    "secondary": {"enum": ["learn", "story", "fast", "dungeons", "raid-prep", "none"]},
+    "guidance": {"enum": ["milestones", "zones"]},
+    "professions": {"enum": ["gold", "craft", "skip"]},
+    "dungeons": {"enum": ["all", "convenient", "avoid"]},
+    "battlegrounds": {"type": "boolean"},
+    "session": {"enum": ["short", "medium", "long"]},
+    "pvpRuleset": {"type": "boolean"}
+  }
+}
