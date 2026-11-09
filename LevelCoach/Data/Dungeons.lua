@@ -1,0 +1,3 @@
+local _, ns = ...
+ns.Data = ns.Data or {}
+ns.Data.Dungeons = {}

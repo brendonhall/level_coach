@@ -7,4 +7,9 @@
 ## SavedVariablesPerCharacter: LevelCoachCharDB
 ## IconTexture: Interface\Icons\INV_Misc_Book_09
 Core\Init.lua
+Data\Items.lua
+Data\Zones.lua
+Data\Dungeons.lua
+Data\Overlay.lua
+Data\Overlay.pending.lua
 Core\Probe.lua
