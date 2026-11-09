@@ -198,10 +198,10 @@ Headless facts this relies on, from the Claude Code docs (checked 2026-11-08):
 
 ## 10. Open questions
 
-1. Is the Linux box usually on while you play? If not, Phase C follows Phase A directly and the
-   daemon is skipped.
-2. Confirm the separate private sync repository (`level_coach_sync`) rather than making this
-   repo private.
+1. Resolved 2026-11-09: the Linux box is on while Brendon plays, so Phase B (daemon) is the path
+   and Phase C (GitHub Actions) is optional.
+2. Working assumption: a separate private sync repository (`level_coach_sync`) rather than
+   making this repo private. Say so if you prefer otherwise before Phase 3 creates it.
 
 ## Sources
 

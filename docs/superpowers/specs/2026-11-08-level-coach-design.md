@@ -26,6 +26,10 @@ Brendon answered the first round of questions. These are now constraints, not op
 | Bridge between machines | **GitHub.** A separate private repository (`level_coach_sync`) carries the export and the coach's overlay, because `level_coach` is public. Dropbox is the fallback. Details in the architecture note. |
 | Hardcore | Out of scope. No Hardcore items and no safety profile in the interview. |
 | Coach proposals | Three trust tiers. `info` items (derived from the character's own state and shipped data) auto-accept; `suggest` and `plan` items wait for `/lc accept`. |
+| Ruleset | **PvP.** World-PvP awareness items are on (contested zones, Will of the Forsaken, escape tools); battleground content stays off unless asked. Each account is one faction on PvP rulesets. |
+| Goal profile (adopted defaults, 2026-11-09) | Learn the game at my own pace; story and new content second; milestones plus zone suggestions; Tailoring and Enchanting; dungeons when convenient; battlegrounds no; sessions of one to three hours. Editable in game with `/lc setup`. |
+| Coach runtime | The Linux box is on while Brendon plays, so the daemon (architecture note, Phase B) is the path. GitHub Actions stays optional. |
+| Approval | Design and architecture notes treated as approved on 2026-11-09 after three rounds of questions with no objections. The implementation plan follows; no code before the plan is reviewed. |
 
 ## 1. Intent
 
@@ -527,15 +531,7 @@ players without Claude Code.
 Rounds one and two (approach, character, routing addons, companion flavor, licensing,
 distribution, dev setup, bridge, Hardcore, acceptance policy) are answered; see §0. Remaining:
 
-1. **Goal profile and ruleset.** The interview answers for this character (§5.1), so the first
-   dataset is ranked for the way Brendon actually plays. Proposed defaults, to confirm or edit:
-   main aim "Learn the game at my own pace" with "Experience the story and new content" second;
-   guidance "milestones plus zone suggestions" until a routing addon is installed; professions
-   "Tailoring and Enchanting" (the guides' default for a warlock); dungeons "when convenient";
-   PvP "no"; sessions "one to three hours". Ruleset (Normal, PvP or RP) is not yet known and
-   decides whether PvP items appear at all.
-2. **Approval.** This document and the architecture note, so the implementation plan can be
-   written.
+None blocking. The goal-profile defaults in §0 can be edited at any time with `/lc setup`.
 
 ## 9. Roadmap sketch (phases, not a plan)
 
