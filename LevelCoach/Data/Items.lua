@@ -59,6 +59,7 @@ ns.Data.Items = {
       "MAGE",
       "PRIEST",
     },
+    ["detail"] = "Check the auction house for a Lesser Magic Wand (enchanter-made, usable at level 5). Put Shoot on your bars; wand skill is default for warlocks.\nAround 13 look for a Greater Magic Wand, or do the Barrens quest Isha Awak for the Branding Rod. Once your DoTs are up, wand instead of casting Shadow Bolt.",
     ["done_when"] = {
       ["type"] = "manual",
     },
@@ -85,6 +86,7 @@ ns.Data.Items = {
     ["why"] = "Wands are free damage with no mana cost. Every guide calls the first wand the biggest early upgrade for a caster. Lesser Magic Wand is enchanter-made and sells on the auction house.",
   },
   {
+    ["detail"] = "The guides' default for a warlock is Tailoring plus Enchanting: craft, then disenchant what you do not need, and Enchanting makes your wands. Herbalism or Skinning pays for riding faster on a fresh economy.\nApprentice trainers are in Brill; the Undercity has every profession. Decide by level 10.",
     ["done_when"] = {
       ["of"] = {
         {
@@ -158,6 +160,7 @@ ns.Data.Items = {
     ["why"] = "Guides lean Tailoring plus Enchanting for a cloth caster. Gathering pays for riding at 40 on a fresh economy. Professions also unlock campsite buffs from skill 20.",
   },
   {
+    ["detail"] = "Learn it in Brill or the Undercity. Turn the linen you loot into Linen Bandages. Bandage between pulls or while a mob is feared, then Life Tap the health back into mana.\nIn Forever, First Aid also crafts healing potions and cures for poisons, diseases and bleeds, which a warlock cannot otherwise remove.",
     ["done_when"] = {
       ["min"] = 1,
       ["name"] = "First Aid",
@@ -254,6 +257,7 @@ ns.Data.Items = {
     ["why"] = "Shards, quest items and loot pile up fast. Any 6-slot bag is fine early; vendor greys and auction greens to pay for them.",
   },
   {
+    ["detail"] = "Speak to the innkeeper in Brill's inn and choose to make it your home. Brill holds the Voidwalker quest at 10 and the flight master, so it is the right base until Silverpine.",
     ["done_when"] = {
       ["type"] = "bind_location",
       ["zone"] = "Brill",
@@ -348,6 +352,7 @@ ns.Data.Items = {
     ["why"] = "The shared Horde zone for levels 10 to 20. Shadowfang Keep is here for later, and some Ruins of Lordaeron quests start here.",
   },
   {
+    ["detail"] = "The zeppelin tower stands outside the Undercity. Take the Orgrimmar line, grab the Orgrimmar flight path, then head south to the Crossroads in the Barrens.\nMost Horde routes work the Barrens from 12 to about 26, with a Hillsbrad visit around 20 to 30.",
     ["done_when"] = {
       ["type"] = "zone_visited",
       ["zone"] = "The Barrens",
@@ -445,6 +450,7 @@ ns.Data.Items = {
     ["why"] = "Reported stacking XP buff plus a portable rest spot. Starts at 14 at the Burned-Out Remains in the southern Barrens and runs through level 25 to 30 zones. Details are disputed, so treat it as optional.",
   },
   {
+    ["detail"] = "Apprentice Riding is sold by Velma Warnam in Brill for a reported 100 gold, first mount included; Zachariah Post sells other colors for 20 gold. Honored with the Undercity takes 10% off.\nPrices are from the beta client; confirm at the trainer. Start saving in your twenties: greens and cloth sell well in launch weeks.",
     ["done_when"] = {
       ["copper"] = 1000000,
       ["type"] = "money_at_least",
@@ -582,6 +588,7 @@ ns.Data.Items = {
     ["why"] = "Dungeon quests are a large share of Forever XP. Warlocks also pick up Hidden Enemies here for the Staff of Orgrimmar.",
   },
   {
+    ["detail"] = "The entrance is above the Undercity. Collect the Horde quests before you go in: four of the six are picked up outside, in Tirisfal Glades, Silverpine Forest and the Undercity.\nRun it once at level with the quests in hand. In Forever's beta, dungeon quest XP was halved and kill XP raised, so one clean run beats repeats.",
     ["done_when"] = {
       ["type"] = "manual",
     },
@@ -810,6 +817,7 @@ ns.Data.Items = {
     ["classes"] = {
       "WARLOCK",
     },
+    ["detail"] = "Talk to Maximillion, the class trainer in Deathknell, as soon as you can. The quest sends you a short way from the village and back; turning it in teaches Summon Imp.\nThe Imp needs no Soul Shard. Keep it out at all times: it attacks from range, and its Blood Pact buff raises your stamina.",
     ["done_when"] = {
       ["id"] = 688,
       ["type"] = "spell_known",
@@ -1088,6 +1096,7 @@ ns.Data.Items = {
     ["classes"] = {
       "WARLOCK",
     },
+    ["detail"] = "At level 10 pick up Halgar's Summons from Halgar in Brill. The Undead chain stays in Tirisfal Glades; the Orgrimmar version sends you into Skull Rock, so take Brill's.\nBring a Soul Shard: the summon costs one. From then on send the Voidwalker in first and let it hold the mob while your DoTs tick.",
     ["done_when"] = {
       ["id"] = 697,
       ["type"] = "spell_known",
@@ -1124,6 +1133,7 @@ ns.Data.Items = {
     ["classes"] = {
       "WARLOCK",
     },
+    ["detail"] = "Train Create Healthstone at the Brill class trainer. Each stone costs a Soul Shard to make. Keep one in your bags at all times; it has its own cooldown, separate from potions.",
     ["done_when"] = {
       ["id"] = 6201,
       ["type"] = "spell_known",
@@ -1461,6 +1471,7 @@ ns.Data.Items = {
     ["classes"] = {
       "WARLOCK",
     },
+    ["detail"] = "At 20 start Devourer of Souls (Succubus) or Hearts of the Lovers (Incubus) in the Undercity. The Horde chain is eight quests across the Barrens and Stonetalon Mountains; pick up the Crossroads and Sun Rock Retreat flight paths first.\nBring a Soul Shard for the summon. The Sayaad deals the most damage of your demons but holds threat worse than the Voidwalker, so let it hit first.",
     ["done_when"] = {
       ["id"] = 712,
       ["type"] = "spell_known",

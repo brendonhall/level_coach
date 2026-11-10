@@ -2,6 +2,10 @@
 - id: warlock-imp-quest
   title: Do the Imp class quest right away
   why: Your first pet. Ranged damage plus the Blood Pact stamina buff. Keep it out at all times until 10.
+  detail: >-
+    Talk to Maximillion, the class trainer in Deathknell, as soon as you can. The quest sends you a short way from the village and back; turning it in teaches Summon Imp.
+
+    The Imp needs no Soul Shard. Keep it out at all times: it attacks from range, and its Blood Pact buff raises your stamina.
   kind: quest
   level: {min: 1, max: 4}
   classes: [WARLOCK]
@@ -116,6 +120,10 @@
 - id: warlock-voidwalker-quest
   title: "Do the Voidwalker quest: Halgar's Summons"
   why: Your tank for the next ten levels. Take the Brill version; the Orgrimmar one sends you into Skull Rock.
+  detail: >-
+    At level 10 pick up Halgar's Summons from Halgar in Brill. The Undead chain stays in Tirisfal Glades; the Orgrimmar version sends you into Skull Rock, so take Brill's.
+
+    Bring a Soul Shard: the summon costs one. From then on send the Voidwalker in first and let it hold the mob while your DoTs tick.
   kind: quest
   level: {min: 10, max: 12}
   classes: [WARLOCK]
@@ -130,6 +138,8 @@
 - id: warlock-healthstone
   title: Train Create Healthstone and always carry one
   why: Separate cooldown from potions. Healthstone ranks are numbered in Forever.
+  detail: >-
+    Train Create Healthstone at the Brill class trainer. Each stone costs a Soul Shard to make. Keep one in your bags at all times; it has its own cooldown, separate from potions.
   kind: train
   level: {min: 10, max: 14}
   classes: [WARLOCK]
@@ -277,6 +287,10 @@
 - id: warlock-sayaad-quest
   title: "Do the Succubus or Incubus quest: Devourer of Souls or Hearts of the Lovers"
   why: Highest-damage demon and the drain-tanking partner from 30. The Horde chain is eight quests across the Barrens and Stonetalon; grab both flight paths first.
+  detail: >-
+    At 20 start Devourer of Souls (Succubus) or Hearts of the Lovers (Incubus) in the Undercity. The Horde chain is eight quests across the Barrens and Stonetalon Mountains; pick up the Crossroads and Sun Rock Retreat flight paths first.
+
+    Bring a Soul Shard for the summon. The Sayaad deals the most damage of your demons but holds threat worse than the Voidwalker, so let it hit first.
   kind: quest
   level: {min: 20, max: 24}
   classes: [WARLOCK]
