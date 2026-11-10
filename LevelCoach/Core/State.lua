@@ -105,10 +105,15 @@ local function skills()
     if not ok then
       return nil
     end
-    for _, index in ipairs({ p1, p2, p3, p4, p5, p6 }) do
-      local name, _, rank = call(GetProfessionInfo, index)
-      if name then
-        out[tostring(name)] = tonumber(rank) or 0
+    -- Empty slots come back as nil in the middle of the list, so no ipairs here.
+    local slots = { p1, p2, p3, p4, p5, p6 }
+    for i = 1, 6 do
+      local index = slots[i]
+      if index then
+        local name, _, rank = call(GetProfessionInfo, index)
+        if name then
+          out[tostring(name)] = tonumber(rank) or 0
+        end
       end
     end
     return out
