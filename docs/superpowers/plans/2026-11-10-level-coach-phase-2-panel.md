@@ -27,29 +27,29 @@ still print the chat list (Task 15 test).
 - [x] Commit: `feat: detail text for tooltip instructions`
 
 ## Task 14: presentation model and tooltip text (pure Lua)
-- [ ] Tests: `tests/python/test_present.py` for `ns.Present.buildModel(result, snapshot, collapsed)`
+- [x] Tests: `tests/python/test_present.py` for `ns.Present.buildModel(result, snapshot, collapsed)`
   (section order Now, Overdue, Soon, Done; counts; collapsed flag; row fields `title`, `zoneText`,
   `checked`, `auto`, `status`) and `ns.Present.tooltipLines(entry, snapshot, resolver)` (title,
   status line, why, detail paragraphs, Where lines, Done-when text, verification notice, hints;
   items with no `where` produce no Where lines) and `ns.Present.describeDetector`.
-- [ ] Implement `LevelCoach/Core/Present.lua`; add to TOC after `Core\State.lua`.
-- [ ] Commit: `feat: presentation model and tooltip text`
+- [x] Implement `LevelCoach/Core/Present.lua`; add to TOC after `Core\State.lua`.
+- [x] Commit: `feat: presentation model and tooltip text`
 
 ## Task 15: panel, waypoints, commands
-- [ ] Stub: `tests/lua/wow_stub.lua` gains a permissive widget (CamelCase methods default to
+- [x] Stub: `tests/lua/wow_stub.lua` gains a permissive widget (CamelCase methods default to
   no-ops, common getters return stored values, `CreateFontString`, `CreateTexture`,
   `SetScrollChild`), a recording `GameTooltip`, `IsShiftKeyDown`, named frames as globals.
-- [ ] Tests: `tests/python/test_panel.py`: `/lc` toggles the panel; rows match the model; a row's
+- [x] Tests: `tests/python/test_panel.py`: `/lc` toggles the panel; rows match the model; a row's
   OnEnter fills GameTooltip with the title and the Where line; the checkbox of an auto-done row
   is disabled; clicking an unchecked row's box marks it done and the model updates; `/lc list`
   prints the chat listing; waypoint pin returns false with no API and true with a TomTom stub.
-- [ ] Implement `LevelCoach/UI/Panel.lua` (movable, saved position in `LevelCoachDB.panel`,
+- [x] Implement `LevelCoach/UI/Panel.lua` (movable, saved position in `LevelCoachDB.panel`,
   close button, header, scroll list, section headers that collapse, recycled rows with
   checkbox, title and zone text, highlight, tooltip on hover, shift-click pin, right-click menu
   via `MenuUtil` when present with skip, snooze 24h, snooze 3 days, clear marks, pin) and
   `LevelCoach/Core/Waypoints.lua` (`ns.Waypoints.pin(item) -> ok, how`). Init: `/lc` toggles,
   `/lc list` prints, `/lc show|hide|reset`; refresh notifies the panel through `ns.afterRefresh`.
-- [ ] Commit: `feat: checklist panel with tooltips, waypoints and context menu`
+- [x] Commit: `feat: checklist panel with tooltips, waypoints and context menu`
 
 ## Task 16: verify in game (Brendon)
 - [ ] `git pull` on the game PC, `/reload`, `/lc`. Drag the panel, hover a row, shift-click a row

@@ -16,4 +16,6 @@ Core\Detectors.lua
 Core\Engine.lua
 Core\State.lua
 Core\Present.lua
+Core\Waypoints.lua
+UI\Panel.lua
 Core\Probe.lua

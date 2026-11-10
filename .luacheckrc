@@ -18,6 +18,7 @@ read_globals = {
   "TaxiNodeName", "GetInventoryItemLink", "GetInventoryItemID", "GetTime", "date", "time",
   "WOW_PROJECT_ID", "WOW_PROJECT_CAMELOT", "WOW_PROJECT_MAINLINE", "WOW_PROJECT_CLASSIC",
   "issecretvalue", "wipe", "strsplit", "tinsert", "format",
+  "GameTooltip", "MenuUtil", "TomTom", "UiMapPoint", "C_SuperTrack", "IsShiftKeyDown",
 }
 
 -- Generated data files carry long explanation strings; they are not hand-formatted.

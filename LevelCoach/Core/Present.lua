@@ -38,7 +38,9 @@ function Present.buildModel(result, snapshot, collapsed)
   local model = { header = header, sections = {}, total = 0 }
   for _, def in ipairs(Present.sections) do
     local entries = result[def.key] or {}
-    local section = { key = def.key, label = def.label, count = #entries, collapsed = collapsed[def.key] == true, rows = {} }
+    local section = {
+      key = def.key, label = def.label, count = #entries, collapsed = collapsed[def.key] == true, rows = {},
+    }
     for _, entry in ipairs(entries) do
       local item = entry.item or {}
       local manual = snapshot.manualDone and snapshot.manualDone[item.id] and true or false
@@ -129,7 +131,8 @@ end
 local function statusLine(entry, item)
   local level = item.level or {}
   local range = "levels " .. tostring(level.min or 1) .. " to " .. tostring(level.max or 60)
-  local label = ({ now = "Now", overdue = "Overdue", soon = "Soon", done = "Done" })[entry.status] or tostring(entry.status)
+  local labels = { now = "Now", overdue = "Overdue", soon = "Soon", done = "Done" }
+  local label = labels[entry.status] or tostring(entry.status)
   local parts = { label, range }
   if item.priority and item.priority ~= "normal" then
     parts[#parts + 1] = item.priority .. " priority"
@@ -157,7 +160,7 @@ local function double(left, right)
 end
 
 -- Returns an array of { text, r, g, b, wrap } or { left, right } tables, top to bottom.
-function Present.tooltipLines(entry, snapshot, resolver)
+function Present.tooltipLines(entry, _snapshot, resolver)
   local item = entry.item or {}
   local lines = {}
   lines[#lines + 1] = line(item.title or tostring(item.id), GOLD)

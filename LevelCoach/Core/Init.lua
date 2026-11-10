@@ -5,6 +5,12 @@ local addonName, ns = ...
 ns.name = addonName
 ns.handlers = {}
 ns.commands = {}
+ns.refreshHooks = {}
+
+-- Register a function called with the result after every refresh (the panel uses this).
+function ns.afterRefresh(fn)
+  ns.refreshHooks[#ns.refreshHooks + 1] = fn
+end
 
 -- Goal profile used until the interview (Phase 2) writes LevelCoachCharDB.goals.
 ns.defaultGoals = {
@@ -67,7 +73,25 @@ function ns.refresh()
   ns.dirty = false
   ns.lastSnapshot = ns.State.snapshot()
   ns.lastResult = ns.Engine.evaluate(ns.lastSnapshot, ns.effectiveGoals(ns.lastSnapshot), ns.State.allItems())
+  for _, fn in ipairs(ns.refreshHooks) do
+    fn(ns.lastResult)
+  end
   return ns.lastResult
+end
+
+-- Set CharDB fields for an item id and refresh. verb, when given, is printed with the id.
+function ns.markItem(fields, id, value, verb)
+  if not ready() or not id then
+    return
+  end
+  local db = ns.State.charDB()
+  for _, field in ipairs(fields) do
+    db[field][id] = value
+  end
+  if verb then
+    ns.print(verb .. " " .. id)
+  end
+  ns.refresh()
 end
 
 -- Coalesces bursts of state events (looting fires several in a row) into one refresh.
@@ -146,16 +170,36 @@ local function mark(fields, token, value, verb)
     ns.print("no such item: " .. tostring(token) .. " (use the number from /lc or the item id)")
     return
   end
-  local db = ns.State.charDB()
-  for _, field in ipairs(fields) do
-    db[field][id] = value
-  end
-  ns.print(verb .. " " .. id)
-  ns.refresh()
+  ns.markItem(fields, id, value, verb)
 end
 
 ns.commands[""] = function()
+  if ns.Panel then
+    ns.Panel.toggle()
+  else
+    ns.showChecklist()
+  end
+end
+ns.commands.list = function()
   ns.showChecklist()
+end
+ns.commands.show = function()
+  if ns.Panel then
+    ns.Panel.show()
+  else
+    ns.showChecklist()
+  end
+end
+ns.commands.hide = function()
+  if ns.Panel then
+    ns.Panel.hide()
+  end
+end
+ns.commands.reset = function()
+  if ns.Panel then
+    ns.Panel.resetPosition()
+    ns.print("panel position reset")
+  end
 end
 ns.commands.soon = function()
   local result = ns.refresh()
@@ -201,8 +245,9 @@ end
 
 ns.commands.help = function()
   ns.print("commands: " .. table.concat(ns.commandNames(), ", "))
-  ns.print("/lc shows the checklist. done, undo, skip and snooze take the number from the listing or an item id;"
-    .. " snooze takes optional hours.")
+  ns.print("/lc toggles the panel; /lc list prints the checklist. done, undo, skip and snooze take the number"
+    .. " from the listing or an item id; snooze takes optional hours. Hover a row for details,"
+    .. " shift-click to pin it on the map, right-click for more.")
 end
 
 ns.registerEvent("ADDON_LOADED", function(name)
