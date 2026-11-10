@@ -75,3 +75,33 @@ def test_level_up_event_prints_now_section(wow_fixture):
     g = lua.rt.globals()
     g.FIRE(lua.ns.frame, "PLAYER_LEVEL_UP", 15)
     assert any("Level 15" in line for line in chat(lua))
+
+
+def test_skills_come_from_professions_when_skill_lines_are_gone(wow_fixture):
+    lua = load_all(wow_fixture)
+    lua.rt.execute("""
+      GetNumSkillLines = nil
+      GetSkillLineInfo = nil
+      function GetProfessions() return 1, nil, nil, nil, 3, 4 end
+      function GetProfessionInfo(i)
+        if i == 1 then return "Herbalism", nil, 16 end
+        if i == 3 then return "Cooking", nil, 1 end
+        return "First Aid", nil, 1
+      end
+    """)
+    s = lua.ns.State.snapshot()
+    assert s.skills["Herbalism"] == 16 and s.skills["First Aid"] == 1 and s.skills["Cooking"] == 1
+
+
+def test_taxi_recording_keeps_only_known_nodes(wow_fixture):
+    lua = load_all(wow_fixture)
+    lua.rt.execute("""
+      function NumTaxiNodes() return 4 end
+      local names = { "Undercity, Tirisfal", "The Sepulcher, Silverpine Forest", "Rog'mar, Riverglades", "Generic, World target" }
+      local kinds = { "CURRENT", "REACHABLE", "DISTANT", "NONE" }
+      function TaxiNodeName(i) return names[i] end
+      function TaxiNodeGetType(i) return kinds[i] end
+    """)
+    kept = lua.ns.State.recordTaxiNodes()
+    nodes = dict(lua.rt.globals().LevelCoachCharDB.taxiNodes.items())
+    assert kept == 2 and set(nodes) == {"Undercity, Tirisfal", "The Sepulcher, Silverpine Forest"}

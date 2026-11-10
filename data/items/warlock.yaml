@@ -12,7 +12,7 @@
   goals: [any]
   priority: high
   where: {zone: Tirisfal Glades, npc: Maximillion, waypoint: [30.8, 66.2], note: "Deathknell class trainer (Undead)"}
-  done_when: {type: spell_known, id: 688, verify: "probe spell.688 must read Summon Imp"}
+  done_when: {type: spell_known, id: 688, verify: "probe 2026-11-09 build 70862: 688 is Summon Imp"}
   verified: {forever: false}
   sources: &tavern ["https://www.warcrafttavern.com/forever/guides/warlock-leveling/"]
 
@@ -25,7 +25,7 @@
   goals: [any]
   priority: high
   where: {note: "Class trainer in your starting valley"}
-  done_when: {type: spell_known, id: 348, verify: "probe spell.348 must read Immolate"}
+  done_when: {type: spell_known, id: 348, verify: "probe 2026-11-09 build 70862: 348 is Immolate"}
   verified: {forever: false}
   sources: &method ["https://www.method.gg/wow-forever/wow-forever-warlock-leveling-guide-and-talents"]
 
@@ -50,7 +50,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: high
-  done_when: {type: spell_known, id: 172, verify: "probe spell.172 must read Corruption"}
+  done_when: {type: spell_known, id: 172, verify: "probe 2026-11-09 build 70862: 172 is Corruption"}
   verified: {forever: false}
   sources: *tavern
 
@@ -75,7 +75,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: normal
-  done_when: {type: spell_known, id: 1454, verify: "probe spell.1454 must read Life Tap"}
+  done_when: {type: spell_known, id: 1454, verify: "probe 2026-11-09 build 70862: 1454 is Life Tap"}
   verified: {forever: false}
   sources: *method
 
@@ -88,7 +88,7 @@
   goals: [any]
   priority: normal
   where: {zone: Tirisfal Glades, npc: Rupert Boch, waypoint: [61.6, 52.4], note: "Brill class trainer"}
-  done_when: {type: spell_known, id: 980, verify: "probe spell.980: renamed spell, ID may differ"}
+  done_when: {type: spell_known, id: 980, verify: "probe 2026-11-09 build 70862: 980 is Bane of Agony (same id as Classic)"}
   verified: {forever: false}
   sources: *tavern
 
@@ -100,7 +100,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: normal
-  done_when: {type: spell_known, id: 5782, verify: "probe spell.5782 must read Fear"}
+  done_when: {type: spell_known, id: 5782, verify: "probe 2026-11-09 build 70862: 5782 is Fear"}
   verified: {forever: false}
   sources: *tavern
 
@@ -131,7 +131,7 @@
   goals: [any]
   priority: high
   where: {zone: Tirisfal Glades, npc: Halgar, note: "Brill"}
-  done_when: {type: spell_known, id: 697, verify: "probe spell.697 must read Summon Voidwalker; probe quest.1470 title"}
+  done_when: {type: spell_known, id: 697, verify: "probe 2026-11-09: 697 is Summon Voidwalker; quest 1470 exists and is the breadcrumb (flagged complete before the spell was known)"}
   verified: {forever: false}
   sources: *tavern
 
@@ -145,7 +145,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: high
-  done_when: {type: spell_known, id: 6201, verify: "probe spell.6201: ranks renumbered in Forever, ID may differ"}
+  done_when: {type: spell_known, id: 6201, verify: "probe 2026-11-09 build 70862: 6201 is Create Healthstone, known at level 10"}
   verified: {forever: false}
   sources: *tavern
 
@@ -181,7 +181,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: normal
-  done_when: {type: spell_known, id: 1120, verify: "probe spell.1120 must read Drain Soul"}
+  done_when: {type: spell_known, id: 1120, verify: "probe 2026-11-09 build 70862: 1120 is Drain Soul"}
   verified: {forever: false}
   sources: *tavern
 
@@ -207,7 +207,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: low
-  done_when: {type: spell_known, id: 755, verify: "probe spell.755 must read Health Funnel"}
+  done_when: {type: spell_known, id: 755, verify: "probe 2026-11-09 build 70862: 755 is Health Funnel"}
   verified: {forever: false}
   sources: *tavern
 
@@ -219,7 +219,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: normal
-  done_when: {type: spell_known, id: 689, verify: "probe spell.689 must read Drain Life"}
+  done_when: {type: spell_known, id: 689, verify: "probe 2026-11-09 build 70862: 689 is Drain Life"}
   verified: {forever: false}
   sources: *method
 
@@ -231,7 +231,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: low
-  done_when: {type: spell_known, id: 704, verify: "probe spell.704 must read Curse of Recklessness"}
+  done_when: {type: spell_known, id: 704, verify: "probe 2026-11-09 build 70862: 704 is Curse of Recklessness"}
   verified: {forever: false}
   sources: *tavern
 
@@ -255,7 +255,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: low
-  done_when: {type: spell_known, id: 5697, verify: "probe spell.5697 must read Unending Breath"}
+  done_when: {type: spell_known, id: 5697, verify: "probe 2026-11-09 build 70862: 5697 is Unending Breath"}
   verified: {forever: false}
   sources: *tavern
 
@@ -267,7 +267,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: normal
-  done_when: {type: spell_known, id: 693, verify: "probe spell.693: ranks renumbered in Forever, ID may differ"}
+  done_when: {type: spell_known, id: 693, verify: "probe 2026-11-09 build 70862: 693 is Create Soulstone"}
   verified: {forever: false}
   sources: *method
 
@@ -298,7 +298,7 @@
   goals: [any]
   priority: high
   where: {zone: Undercity, note: "Quest starts in the Undercity for Undead"}
-  done_when: {type: spell_known, id: 712, verify: "probe spell.712 must read Summon Succubus; add Summon Incubus ID as any_of"}
+  done_when: {type: spell_known, id: 712, verify: "probe 2026-11-09: 712 is Summon Succubus; Summon Incubus id still unknown, add as any_of when found"}
   verified: {forever: false}
   sources: *tavern
 
@@ -310,7 +310,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: normal
-  done_when: {type: spell_known, id: 706, verify: "probe spell.706 must read Demon Armor"}
+  done_when: {type: spell_known, id: 706, verify: "probe 2026-11-09 build 70862: 706 is Demon Armor"}
   verified: {forever: false}
   sources: *method
 
@@ -322,7 +322,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: normal
-  done_when: {type: spell_known, id: 1490, verify: "probe spell.1490 must read Curse of the Elements"}
+  done_when: {type: manual, verify: "probe 2026-11-09: spell 1490 does not exist in Forever; new id pending the by-name probe"}
   verified: {forever: false}
   sources: *tavern
 
@@ -334,7 +334,7 @@
   classes: [WARLOCK]
   goals: [any]
   priority: low
-  done_when: {type: spell_known, id: 698, verify: "probe spell.698 must read Ritual of Summoning"}
+  done_when: {type: spell_known, id: 698, verify: "probe 2026-11-09 build 70862: 698 is Ritual of Summoning"}
   verified: {forever: false}
   sources: *method
 

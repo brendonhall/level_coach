@@ -257,10 +257,19 @@ ns.Data.Items = {
     ["why"] = "Shards, quest items and loot pile up fast. Any 6-slot bag is fine early; vendor greys and auction greens to pay for them.",
   },
   {
-    ["detail"] = "Speak to the innkeeper in Brill's inn and choose to make it your home. Brill holds the Voidwalker quest at 10 and the flight master, so it is the right base until Silverpine.",
+    ["detail"] = "Speak to an innkeeper and choose to make the inn your home. Brill's inn is on the main street; the Undercity's is in the Trade Quarter. Brill holds the Voidwalker quest at 10 and a flight master, the Undercity holds every trainer and the zeppelin tower.",
     ["done_when"] = {
-      ["type"] = "bind_location",
-      ["zone"] = "Brill",
+      ["of"] = {
+        {
+          ["type"] = "bind_location",
+          ["zone"] = "Brill",
+        },
+        {
+          ["type"] = "bind_location",
+          ["zone"] = "Undercity",
+        },
+      },
+      ["type"] = "any_of",
     },
     ["goals"] = {
       "any",
@@ -278,17 +287,16 @@ ns.Data.Items = {
     ["sources"] = {
       "https://www.warcrafttavern.com/forever/guides/warlock-leveling/",
     },
-    ["title"] = "Set your hearth in Brill",
+    ["title"] = "Set your hearth in Brill or the Undercity",
     ["verified"] = {
       ["forever"] = false,
-      ["note"] = "Classic knowledge; confirm the inn is unchanged",
+      ["note"] = "bind strings confirmed by probe: GetBindLocation returned Undercity",
     },
     ["where"] = {
-      ["note"] = "Gallows' End Tavern, Brill",
-      ["npc"] = "Innkeeper Renee",
+      ["note"] = "Brill inn, or the Undercity Trade Quarter inn",
       ["zone"] = "Tirisfal Glades",
     },
-    ["why"] = "Brill is the handoff town after Deathknell and holds the Voidwalker quest at 10.",
+    ["why"] = "Brill is the handoff town after Deathknell and holds the Voidwalker quest at 10. The Undercity next door has every trainer and the zeppelins; either is a fine base until Silverpine.",
   },
   {
     ["done_when"] = {
@@ -821,7 +829,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 688,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.688 must read Summon Imp",
+      ["verify"] = "probe 2026-11-09 build 70862: 688 is Summon Imp",
     },
     ["goals"] = {
       "any",
@@ -858,7 +866,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 348,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.348 must read Immolate",
+      ["verify"] = "probe 2026-11-09 build 70862: 348 is Immolate",
     },
     ["goals"] = {
       "any",
@@ -916,7 +924,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 172,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.172 must read Corruption",
+      ["verify"] = "probe 2026-11-09 build 70862: 172 is Corruption",
     },
     ["goals"] = {
       "any",
@@ -979,7 +987,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 1454,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.1454 must read Life Tap",
+      ["verify"] = "probe 2026-11-09 build 70862: 1454 is Life Tap",
     },
     ["goals"] = {
       "any",
@@ -1007,7 +1015,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 980,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.980: renamed spell, ID may differ",
+      ["verify"] = "probe 2026-11-09 build 70862: 980 is Bane of Agony (same id as Classic)",
     },
     ["goals"] = {
       "any",
@@ -1044,7 +1052,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 5782,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.5782 must read Fear",
+      ["verify"] = "probe 2026-11-09 build 70862: 5782 is Fear",
     },
     ["goals"] = {
       "any",
@@ -1100,7 +1108,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 697,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.697 must read Summon Voidwalker; probe quest.1470 title",
+      ["verify"] = "probe 2026-11-09: 697 is Summon Voidwalker; quest 1470 exists and is the breadcrumb (flagged complete before the spell was known)",
     },
     ["goals"] = {
       "any",
@@ -1137,7 +1145,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 6201,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.6201: ranks renumbered in Forever, ID may differ",
+      ["verify"] = "probe 2026-11-09 build 70862: 6201 is Create Healthstone, known at level 10",
     },
     ["goals"] = {
       "any",
@@ -1217,7 +1225,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 1120,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.1120 must read Drain Soul",
+      ["verify"] = "probe 2026-11-09 build 70862: 1120 is Drain Soul",
     },
     ["goals"] = {
       "any",
@@ -1281,7 +1289,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 755,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.755 must read Health Funnel",
+      ["verify"] = "probe 2026-11-09 build 70862: 755 is Health Funnel",
     },
     ["goals"] = {
       "any",
@@ -1309,7 +1317,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 689,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.689 must read Drain Life",
+      ["verify"] = "probe 2026-11-09 build 70862: 689 is Drain Life",
     },
     ["goals"] = {
       "any",
@@ -1337,7 +1345,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 704,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.704 must read Curse of Recklessness",
+      ["verify"] = "probe 2026-11-09 build 70862: 704 is Curse of Recklessness",
     },
     ["goals"] = {
       "any",
@@ -1391,7 +1399,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 5697,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.5697 must read Unending Breath",
+      ["verify"] = "probe 2026-11-09 build 70862: 5697 is Unending Breath",
     },
     ["goals"] = {
       "any",
@@ -1419,7 +1427,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 693,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.693: ranks renumbered in Forever, ID may differ",
+      ["verify"] = "probe 2026-11-09 build 70862: 693 is Create Soulstone",
     },
     ["goals"] = {
       "any",
@@ -1475,7 +1483,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 712,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.712 must read Summon Succubus; add Summon Incubus ID as any_of",
+      ["verify"] = "probe 2026-11-09: 712 is Summon Succubus; Summon Incubus id still unknown, add as any_of when found",
     },
     ["factions"] = {
       "Horde",
@@ -1510,7 +1518,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 706,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.706 must read Demon Armor",
+      ["verify"] = "probe 2026-11-09 build 70862: 706 is Demon Armor",
     },
     ["goals"] = {
       "any",
@@ -1536,9 +1544,8 @@ ns.Data.Items = {
       "WARLOCK",
     },
     ["done_when"] = {
-      ["id"] = 1490,
-      ["type"] = "spell_known",
-      ["verify"] = "probe spell.1490 must read Curse of the Elements",
+      ["type"] = "manual",
+      ["verify"] = "probe 2026-11-09: spell 1490 does not exist in Forever; new id pending the by-name probe",
     },
     ["goals"] = {
       "any",
@@ -1566,7 +1573,7 @@ ns.Data.Items = {
     ["done_when"] = {
       ["id"] = 698,
       ["type"] = "spell_known",
-      ["verify"] = "probe spell.698 must read Ritual of Summoning",
+      ["verify"] = "probe 2026-11-09 build 70862: 698 is Ritual of Summoning",
     },
     ["goals"] = {
       "any",

@@ -1,79 +1,97 @@
 # Forever API probe results
 
-**Status:** awaiting the first run (`docs/dev/windows-deploy.md`, step 5). Until then every ID in
-`data/` carries a `verify` note and `Core/State.lua` guards every call with `pcall`.
+**First run:** 2026-11-09, client 1.60.1 build 70862 (Nov 6 2026), interface 16001. Level 10 Undead
+Warlock standing in the Undercity, PvP ruleset. Raw file: `probe/LevelCoach.lua` (character name
+redacted). Every row below is confirmed on the live client unless marked otherwise.
 
-Fill one table per probe section from `LevelCoachDB.probe`. The third column records the
-decision the code takes.
+## Build and identity
 
-## Build
-
-| probe | result | use in State.lua |
+| probe | result | decision |
 |---|---|---|
-| build.toc (`select(4, GetBuildInfo())`) | | TOC interface number |
-| build.projectIDs (`WOW_PROJECT_ID`, `WOW_PROJECT_CAMELOT`) | | Forever detection |
-| build.foreverPresetFn | | capability probe |
-| build.gameMode, build.realm | | ruleset detection |
+| `GetBuildInfo()` | 1.60.1, build 70862, TOC 16001 | TOC stays at 16001 |
+| `WOW_PROJECT_ID`, `WOW_PROJECT_CAMELOT`, `_MAINLINE`, `_CLASSIC` | 18, 18, 1, 2 | Forever is `WOW_PROJECT_ID == WOW_PROJECT_CAMELOT` |
+| `C_GameRules.GetForeverExperiencePreset` | function | usable as a capability probe |
+| `C_GameRules.GetActiveGameMode()` | 1 | meaning unknown; not used |
+| `GetRealmName()` | "CAMWOW US1 Realm 8 PvP" | ruleset is the last word; the PvP inference (substring) works |
+| `UnitClass("player")` | "Warlock", "WARLOCK", 9 | class token as expected |
+| `UnitRace("player")` | "Undead", "Scourge", 5 | race file name `Scourge` as the data assumes |
+| `UnitFactionGroup("player")` | "Horde", "Horde" | |
+| `UnitName("player")` | first name, last name | Forever characters have two names; the second return is the surname, not a realm |
 
-## Identity and location
+## Location
 
-| probe | result | use in State.lua |
+| probe | result | decision |
 |---|---|---|
-| unit.level, unit.class, unit.race, unit.faction | | snapshot identity (race file name expected `Scourge`) |
-| loc.zone, loc.mapID, loc.pos | | zone, mapID, waypoint support |
+| `GetZoneText()`, `GetSubZoneText()`, `GetRealZoneText()` | "Undercity", "Trade Quarter", "Undercity" | zone strings match the data |
+| `C_Map.GetBestMapForUnit("player")` | 1458 | equals the Classic uiMapID for the Undercity; the Classic map table in `zones.yaml` is very likely right |
+| `C_Map.GetPlayerMapPosition(...):GetXY()` | 0.633 (y truncated by the probe's `and`) | works; probe fixed to return both values |
+| `C_Map.SetUserWaypoint` | function | built-in pin available |
+| `C_Map.CanSetUserWaypointOnMap(1458)` | true | |
 
 ## Quests
 
-| probe | result | use in State.lua |
+| probe | result | decision |
 |---|---|---|
-| quest.numCompleted | | `C_QuestLog.GetAllCompletedQuestIDs` available? |
-| quest.1470 | | expected "Halgar's Summons" |
-| quest.1740 | | expected "Devourer of Souls" |
-| quest.1798 | | expected "Seeking Strahad" |
+| `C_QuestLog.GetNumQuestLogEntries()` | 16 entries, 12 quests | |
+| `#C_QuestLog.GetAllCompletedQuestIDs()` | 62 | completed-quest set is available |
+| 1470 | title nil, **flagged complete** | the quest exists; at level 10 with Summon Voidwalker still unknown, 1470 is the breadcrumb "Halgar's Summons", not the quest that teaches the spell |
+| 1740, 1798 | title nil, not complete | expected at level 10; `GetTitleForQuestID` returns nil for uncached quests, so titles are not a reliable probe |
 
-## Spells
+## Spells (`C_Spell.GetSpellInfo(id).name`, `IsPlayerSpell(id)`)
 
-One row per ID in `Probe.spellIDs`: `confirmed <name>`, `renumbered` (name differs), or
-`unknown`. Renumbered entries get the new ID from the spellbook tooltip or `/dump`.
+| id | name on live | known at 10 | decision |
+|---|---|---|---|
+| 686 | Shadow Bolt | yes | confirmed |
+| 348 | Immolate | yes | confirmed |
+| 172 | Corruption | yes | confirmed |
+| 702 | Curse of Weakness | no | confirmed id (not trained yet) |
+| 688 | Summon Imp | yes | confirmed |
+| 1454 | Life Tap | yes | confirmed |
+| 980 | **Bane of Agony** | yes | same id as Classic's Curse of Agony, renamed |
+| 5782 | Fear | yes | confirmed |
+| 1120 | Drain Soul | yes | confirmed |
+| 6201 | Create Healthstone | yes | confirmed; the renumbered rank 1 keeps the old id |
+| 697 | Summon Voidwalker | no | confirmed id |
+| 755 | Health Funnel | no | confirmed id |
+| 689 | Drain Life | no | confirmed id |
+| 704 | Curse of Recklessness | no | confirmed id |
+| 5697 | Unending Breath | no | confirmed id |
+| 693 | Create Soulstone | no | confirmed id |
+| 712 | Summon Succubus | no | confirmed id; Summon Incubus id still unknown |
+| 706 | Demon Armor | no | confirmed id |
+| 698 | Ritual of Summoning | no | confirmed id |
+| 1490 | **nil** | | **Curse of the Elements 1490 does not exist in Forever** (ranks were reworked); item switched to manual until the new id is found by name |
+| 691 | Summon Felhunter | no | confirmed id |
+| 5784 | Summon Felsteed | no | confirmed id |
+| 687 | Demon Skin | yes | confirmed |
 
-| id | expected name | result |
-|---|---|---|
-| 686 | Shadow Bolt | |
-| 348 | Immolate | |
-| 172 | Corruption | |
-| 702 | Curse of Weakness | |
-| 688 | Summon Imp | |
-| 1454 | Life Tap | |
-| 980 | Bane of Agony (was Curse of Agony) | |
-| 5782 | Fear | |
-| 1120 | Drain Soul | |
-| 6201 | Create Healthstone (rank 1) | |
-| 697 | Summon Voidwalker | |
-| 755 | Health Funnel | |
-| 689 | Drain Life | |
-| 704 | Curse of Recklessness | |
-| 5697 | Unending Breath | |
-| 693 | Create Soulstone (rank 1) | |
-| 712 | Summon Succubus | |
-| 706 | Demon Armor | |
-| 698 | Ritual of Summoning | |
-| 1490 | Curse of the Elements | |
-| 691 | Summon Felhunter | |
-| 5784 | Summon Felsteed | |
-| 687 | Demon Skin | |
+Next probe adds a by-name lookup (`C_Spell.GetSpellInfo("Curse of the Elements")`) for the ids the
+data still lacks: Curse of the Elements, Summon Incubus, Bane of Doom, Create Firestone, Create
+Spellstone, Wrack, Portal of Summoning.
 
 ## Skills and professions
 
 | probe | result | decision |
 |---|---|---|
-| skill.fns | | if `GetNumSkillLines` exists use skill lines; else if `GetProfessions` exists use `GetProfessionInfo`; else `skill_line` detectors return nil (manual) |
-| skill.lines or skill.professions | | names as the data must spell them |
+| `GetNumSkillLines`, `GetSkillLineInfo` | nil, nil | the Classic skill-line API is gone |
+| `GetProfessions`, `GetProfessionInfo` | function, function | **State.skills() uses the profession path**; names as returned: "Herbalism", "First Aid", "Cooking" |
+| live values | Herbalism 16, First Aid 1, Cooking 1 | the `skill_line` detectors work with these names |
 
-## Economy, map, misc
+Weapon skills are not reported by this path. If a future item needs one, probe `C_SkillInfo` or the
+character sheet before adding a detector.
 
-| probe | result | use in State.lua |
+## Talents, economy, misc
+
+| probe | result | decision |
 |---|---|---|
-| econ.money, econ.bind, econ.rested, econ.bagSlots | | money, bindLocation, rested, bag scan |
-| map.setWaypointFn, map.canWaypoint | | built-in pin for "where" |
-| misc.fns (`issecretvalue`, `RequestTimePlayed`, `NumTaxiNodes`) | | guards, play time, taxi recording |
-| taxi | | node name format for `taxi_known` detectors |
+| `C_Traits`, `C_ClassTalents`, `C_SpecializationInfo` | table, table, table | talents run on the trait system; a `talent` detector would use `C_Traits` |
+| `GetMoney()` | 3434 copper | |
+| `GetBindLocation()` | "Undercity" | hearth strings are area names; the Brill item now accepts Brill or the Undercity |
+| `GetXPExhaustion()` | 1058 | rested XP readable |
+| `C_Container.GetContainerNumSlots(0)` | 20 | the backpack has 20 slots |
+| `issecretvalue`, `RequestTimePlayed`, `NumTaxiNodes` | function, function, function | |
+| taxi map | 14 nodes listed from the Undercity at level 10, including Rog'mar and Light's Hope | **the taxi map lists undiscovered nodes too**; `State.recordTaxiNodes` now keeps only nodes whose `TaxiNodeGetType` is CURRENT or REACHABLE and drops the "Generic, World target" entry. Node name format: "Undercity, Tirisfal" |
+
+## Panel
+
+Not yet run in game. Record findings here after the first `/lc` on the live client.

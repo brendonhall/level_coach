@@ -14,6 +14,9 @@ Probe.spellIDs = { 686, 348, 172, 702, 688, 1454, 980, 5782, 1120, 6201, 697, 75
   693, 712, 706, 698, 1490, 691, 5784, 687 }
 -- Classic-era quest IDs believed to be Halgar's Summons, Devourer of Souls, Seeking Strahad.
 Probe.questIDs = { 1470, 1740, 1798 }
+-- Spells whose Forever IDs the data still lacks; resolved by name when the client has them cached.
+Probe.spellNames = { "Curse of the Elements", "Summon Incubus", "Bane of Doom", "Create Firestone",
+  "Create Spellstone", "Wrack", "Portal of Summoning", "Apprentice Riding" }
 
 local count = 0
 
@@ -70,7 +73,10 @@ function Probe.run()
   try("loc.pos", function()
     local mapID = C_Map.GetBestMapForUnit("player")
     local pos = C_Map.GetPlayerMapPosition(mapID, "player")
-    return pos and pos:GetXY()
+    if not pos then
+      return nil
+    end
+    return pos:GetXY()
   end)
 
   try("quest.numLog", function() return C_QuestLog.GetNumQuestLogEntries() end)
@@ -83,6 +89,13 @@ function Probe.run()
     try("spell." .. id, function()
       local info = C_Spell.GetSpellInfo(id)
       return info and info.name, IsPlayerSpell(id)
+    end)
+  end
+
+  for _, name in ipairs(Probe.spellNames) do
+    try("spellByName." .. name, function()
+      local info = C_Spell.GetSpellInfo(name)
+      return info and info.spellID, info and info.name
     end)
   end
 
@@ -139,6 +152,17 @@ function Probe.onTaxiMap()
   table.sort(names)
   LevelCoachDB.probe = LevelCoachDB.probe or {}
   LevelCoachDB.probe.taxi = table.concat(names, "; ")
+  -- Raw listing with node types, for research.
+  local ok, n = pcall(NumTaxiNodes)
+  if ok and type(n) == "number" then
+    local raw = {}
+    for i = 1, n do
+      local ok2, nm = pcall(TaxiNodeName, i)
+      local ok3, kind = pcall(TaxiNodeGetType, i)
+      raw[#raw + 1] = (ok2 and tostring(nm) or "?") .. " [" .. (ok3 and tostring(kind) or "?") .. "]"
+    end
+    LevelCoachDB.probe.taxiRaw = table.concat(raw, "; ")
+  end
   ns.print("known taxi nodes recorded: " .. #names)
 end
 

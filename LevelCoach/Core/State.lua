@@ -160,14 +160,20 @@ function State.recordTaxiNodes()
   if type(n) ~= "number" then
     return 0
   end
+  -- The modern taxi map lists undiscovered nodes too (probe 2026-11-09), so keep only CURRENT and
+  -- REACHABLE ones; when the type API is missing, keep everything except the generic placeholder.
   local db = State.charDB()
+  local kept = 0
   for i = 1, n do
+    local kind = call(TaxiNodeGetType, i)
     local name = plain(call(TaxiNodeName, i))
-    if type(name) == "string" then
+    if type(name) == "string" and name ~= "" and not name:find("^Generic")
+      and (kind == nil or kind == "CURRENT" or kind == "REACHABLE") then
       db.taxiNodes[name] = true
+      kept = kept + 1
     end
   end
-  return n
+  return kept
 end
 
 function State.snapshot()

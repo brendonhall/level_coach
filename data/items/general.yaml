@@ -116,18 +116,24 @@
   sources: *method
 
 - id: general-hearth-brill
-  title: Set your hearth in Brill
-  why: Brill is the handoff town after Deathknell and holds the Voidwalker quest at 10.
+  title: Set your hearth in Brill or the Undercity
+  why: Brill is the handoff town after Deathknell and holds the Voidwalker quest at 10. The Undercity next door has every trainer and the zeppelins; either is a fine base until Silverpine.
   detail: >-
-    Speak to the innkeeper in Brill's inn and choose to make it your home. Brill holds the Voidwalker quest at 10 and the flight master, so it is the right base until Silverpine.
+    Speak to an innkeeper and choose to make the inn your home. Brill's inn is on the main street;
+    the Undercity's is in the Trade Quarter. Brill holds the Voidwalker quest at 10 and a flight
+    master, the Undercity holds every trainer and the zeppelin tower.
   kind: setup
   level: {min: 6, max: 12}
   races: [Scourge]
   goals: [any]
   priority: normal
-  where: {zone: Tirisfal Glades, npc: Innkeeper Renee, note: "Gallows' End Tavern, Brill"}
-  done_when: {type: bind_location, zone: Brill}
-  verified: {forever: false, note: "Classic knowledge; confirm the inn is unchanged"}
+  where: {zone: Tirisfal Glades, note: "Brill inn, or the Undercity Trade Quarter inn"}
+  done_when:
+    type: any_of
+    of:
+      - {type: bind_location, zone: Brill}
+      - {type: bind_location, zone: Undercity}
+  verified: {forever: false, note: "bind strings confirmed by probe: GetBindLocation returned Undercity"}
   sources: *tavern
 
 - id: general-hearth-sepulcher

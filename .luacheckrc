@@ -15,7 +15,7 @@ read_globals = {
   "GetXPExhaustion", "GetMoney", "GetBindLocation", "GetZoneText", "GetSubZoneText", "GetRealZoneText",
   "GetRealmName", "GetBuildInfo", "IsPlayerSpell", "IsSpellKnown", "GetNumSkillLines", "GetSkillLineInfo",
   "GetProfessions", "GetProfessionInfo", "InCombatLockdown", "RequestTimePlayed", "NumTaxiNodes",
-  "TaxiNodeName", "GetInventoryItemLink", "GetInventoryItemID", "GetTime", "date", "time",
+  "TaxiNodeName", "TaxiNodeGetType", "GetInventoryItemLink", "GetInventoryItemID", "GetTime", "date", "time",
   "WOW_PROJECT_ID", "WOW_PROJECT_CAMELOT", "WOW_PROJECT_MAINLINE", "WOW_PROJECT_CLASSIC",
   "issecretvalue", "wipe", "strsplit", "tinsert", "format",
   "GameTooltip", "MenuUtil", "TomTom", "UiMapPoint", "C_SuperTrack", "IsShiftKeyDown",
