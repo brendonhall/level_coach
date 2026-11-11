@@ -107,3 +107,28 @@ date = os.date
 function GetTime() return os.time() end
 function InCombatLockdown() return false end
 function IsShiftKeyDown() return false end
+
+-- Secure-hook and StaticPopup stand-ins. StaticPopup_Show builds a dialog widget, runs the
+-- dialog's OnShow if StaticPopupDialogs defines one, then runs post-hooks like hooksecurefunc would.
+HOOKS = {}
+function hooksecurefunc(a, b, c)
+  local name, fn = a, b
+  if type(a) == "table" then name, fn = b, c end
+  HOOKS[name] = HOOKS[name] or {}
+  HOOKS[name][#HOOKS[name] + 1] = fn
+end
+StaticPopupDialogs = StaticPopupDialogs or {}
+VISIBLE_POPUPS = {}
+function StaticPopup_Show(which, text1, text2, data)
+  local dialog = CreateFrame("Frame", nil, UIParent)
+  dialog.which, dialog.data = which, data
+  dialog.editBox = CreateFrame("EditBox", nil, dialog)
+  local def = StaticPopupDialogs[which]
+  if def and def.OnShow then def.OnShow(dialog, data) end
+  VISIBLE_POPUPS[which] = dialog
+  for _, fn in ipairs(HOOKS["StaticPopup_Show"] or {}) do fn(which, text1, text2, data) end
+  return dialog
+end
+function StaticPopup_FindVisible(which) return VISIBLE_POPUPS[which] end
+function IsInGuild() return true end
+function ToggleGuildFrame() TOGGLED_GUILD = (TOGGLED_GUILD or 0) + 1 end

@@ -4,7 +4,7 @@ codes = true
 exclude_files = { "tests/lua/wow_stub.lua" }
 
 -- Globals this addon owns.
-globals = { "LevelCoachDB", "LevelCoachCharDB", "SLASH_LEVELCOACH1", "SlashCmdList" }
+globals = { "LevelCoachDB", "LevelCoachCharDB", "SLASH_LEVELCOACH1", "GuildKinDB", "SLASH_GUILDKIN1", "SlashCmdList" }
 
 -- WoW client API the addon reads. Extend here, never silence warnings in code.
 read_globals = {
@@ -19,6 +19,8 @@ read_globals = {
   "WOW_PROJECT_ID", "WOW_PROJECT_CAMELOT", "WOW_PROJECT_MAINLINE", "WOW_PROJECT_CLASSIC",
   "issecretvalue", "wipe", "strsplit", "tinsert", "format",
   "GameTooltip", "MenuUtil", "TomTom", "UiMapPoint", "C_SuperTrack", "IsShiftKeyDown",
+  "hooksecurefunc", "StaticPopup_Show", "StaticPopup_FindVisible", "StaticPopupDialogs",
+  "GetGuildRosterInfo", "GetNumGuildMembers", "GuildRoster", "C_GuildInfo", "C_Club", "IsInGuild", "ToggleGuildFrame",
 }
 
 -- Generated data files carry long explanation strings; they are not hand-formatted.

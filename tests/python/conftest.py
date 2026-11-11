@@ -91,3 +91,29 @@ def wow_fixture(lua):
     """A Lua runtime whose WoW globals describe a level 14 Undead Warlock in Silverpine."""
     lua.rt.execute(WOW_FIXTURE_LUA)
     return lua
+
+
+GUILD_FIXTURE_LUA = """
+local rows = {
+  { "Boney-Scruggins", "Officer", 1, 10, "Warlock", "Undercity", "", "", true, 0, "WARLOCK", 0, 0, false, false, 0, "Player-1" },
+  { "Alta-Scruggins", "Member", 3, 4, "Priest", "Brill", "bank", "Scruggins | bank alt", false, 0, "PRIEST", 0, 0, false, false, 0, "Player-2" },
+  { "Zed-Ironfoot", "Member", 3, 22, "Warrior", "Barrens", "", "raider", true, 0, "WARRIOR", 0, 0, false, false, 0, "Player-3" },
+  { "Nameless", "Initiate", 4, 1, "Rogue", "Durotar", "", "", true, 0, "ROGUE", 0, 0, false, false, 0, "Player-4" },
+}
+GUILD_ROWS = rows
+function GetNumGuildMembers() return #rows, #rows, #rows end
+function GetGuildRosterInfo(i) local r = rows[i]; if not r then return nil end; return unpack(r, 1, 17) end
+C_GuildInfo = {
+  CanViewOfficerNote = function() return true end,
+  CanEditOfficerNote = function() return true end,
+  GuildRoster = function() ROSTER_REQUESTS = (ROSTER_REQUESTS or 0) + 1 end,
+}
+GuildKinDB = {}
+"""
+
+
+@pytest.fixture
+def guild_fixture(lua):
+    """A Lua runtime whose guild API describes a four-member guild with readable officer notes."""
+    lua.rt.execute(GUILD_FIXTURE_LUA)
+    return lua

@@ -25,7 +25,11 @@ path, for example `C:\Program Files (x86)\World of Warcraft`.
 
 ```powershell
 New-Item -ItemType Junction -Path "<WoW>\<flavor>\Interface\AddOns\LevelCoach" -Target "C:\dev\level_coach\LevelCoach"
+New-Item -ItemType Junction -Path "<WoW>\<flavor>\Interface\AddOns\GuildKin" -Target "C:\dev\level_coach\GuildKin"
 ```
+
+The second line adds GuildKin, the officer-notes addon; skip it on a character that is not a guild
+officer.
 
 If `Interface\AddOns` does not exist yet, create it first. A junction, unlike a symlink, needs
 no special privileges on most setups and WoW follows it without complaint.

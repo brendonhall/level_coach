@@ -8,3 +8,6 @@
 Core\Init.lua
 Core\Names.lua
 Core\Plan.lua
+Core\Roster.lua
+Core\Prefill.lua
+UI\Window.lua
