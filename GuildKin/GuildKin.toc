@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: GuildKin
+## Notes: Puts the player's name in every guildmate's officer note, the way Forever allows: you press Enter.
+## Author: Brendon Hall
+## Version: 0.0.1
+## SavedVariables: GuildKinDB
+## IconTexture: Interface\Icons\INV_Misc_GroupLooking
+Core\Init.lua
+Core\Names.lua
+Core\Plan.lua

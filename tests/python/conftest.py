@@ -19,10 +19,10 @@ class Lua:
         """Compile without running; raises on a syntax error."""
         return self._load(src, name)
 
-    def load_addon_file(self, relpath):
+    def load_addon_file(self, relpath, addon="LevelCoach", ns=None):
         """Run an addon file with the (addonName, ns) varargs the client passes."""
-        src = (ROOT / "LevelCoach" / relpath).read_text(encoding="utf-8")
-        return self._load(src, "=" + relpath)("LevelCoach", self.ns)
+        src = (ROOT / addon / relpath).read_text(encoding="utf-8")
+        return self._load(src, "=" + addon + "/" + relpath)(addon, ns if ns is not None else self.ns)
 
     def table(self, obj):
         """Recursively convert a Python dict or list into a Lua table."""
